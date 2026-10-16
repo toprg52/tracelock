@@ -1,0 +1,18 @@
+permission:
+  weight: 15
+runtime:
+  weight: 25
+network:
+  weight: 15
+certificate:
+  weight: 10
+ioc:
+  weight: 10
+obfuscation:
+  weight: 10
+mitre:
+  weight: 5
+campaign:
+  weight: 5
+ai_context:
+  weight: 5
