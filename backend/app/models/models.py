@@ -4,6 +4,9 @@ from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Boolean, J
 from sqlalchemy.dialects.postgresql import UUID
 from backend.app.core.database import Base
 
+def utc_now_naive():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 class User(Base):
     __tablename__ = "users"
     
@@ -11,7 +14,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
     role = Column(String, default="analyst") # analyst, officer, admin
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now_naive)
     last_login = Column(DateTime, nullable=True)
 
 class Case(Base):
@@ -23,7 +26,7 @@ class Case(Base):
     sha256 = Column(String, index=True, nullable=False)
     filename = Column(String, nullable=False)
     status = Column(String, default="queued") # queued, analyzing, completed, failed
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=utc_now_naive)
     
     # Store JSON reports directly using PG JSONB
     manifest_json = Column(JSON, nullable=True)
@@ -63,7 +66,7 @@ class Report(Base):
     case_id = Column(UUID(as_uuid=True), ForeignKey("cases.id"))
     report_type = Column(String, nullable=False) # analyst, executive, compliance, customer_advisory
     object_key = Column(String, nullable=False) # minio storage key
-    generated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    generated_at = Column(DateTime, default=utc_now_naive)
 
 class AuditLog(Base):
     __tablename__ = "audit_logs"
@@ -72,5 +75,5 @@ class AuditLog(Base):
     actor = Column(String, nullable=False)
     action = Column(String, nullable=False)
     resource = Column(String, nullable=False)
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    timestamp = Column(DateTime, default=utc_now_naive)
     metadata_json = Column(JSON, nullable=True)

@@ -396,23 +396,53 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     let payload: any = null;
     let serverCaseId = "case-" + Math.floor(1000 + Math.random() * 9000);
 
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
     try {
       const formData = new FormData();
       formData.append("file", file);
 
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
       const res = await fetch(`${API_BASE_URL}/api/v1/uploads`, {
         method: "POST",
         body: formData,
       });
 
-      if (res.ok) {
+      if (!res.ok) {
+        let errorMsg = `Upload failed with HTTP ${res.status}`;
+        try {
+          const errData = await res.json();
+          if (errData.detail) {
+            errorMsg = typeof errData.detail === 'string' ? errData.detail : JSON.stringify(errData.detail);
+          }
+        } catch {
+          // non-json body
+        }
+        if (!isDemoMode) {
+          const uploadErr: any = new Error(errorMsg);
+          uploadErr.status = res.status;
+          setError(`HTTP ${res.status}: ${errorMsg}`);
+          setIsLoading(false);
+          throw uploadErr;
+        }
+      } else {
         const data = await res.json();
         payload = data.case_data;
         if (data.case_id) serverCaseId = data.case_id;
       }
-    } catch (err) {
-      console.warn("Backend API upload call unreachable or failed, switching to client-side extraction fallback:", err);
+    } catch (err: any) {
+      if (!isDemoMode) {
+        setIsLoading(false);
+        const msg = err?.message || "Network error connecting to backend API";
+        setError(msg);
+        throw err;
+      }
+      console.warn("Backend API upload call unreachable or failed, switching to client-side extraction fallback in demo mode:", err);
+    }
+
+    if (!isDemoMode && !payload) {
+      setIsLoading(false);
+      const msg = "Analysis failed: No forensic payload returned from server.";
+      setError(msg);
+      throw new Error(msg);
     }
 
     // Compute dynamic per-file characteristics from file name & SHA-256 seed

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Upload, ArrowRight, RefreshCw, FileCode, CheckCircle2 } from 'lucide-react';
+import { Shield, Upload, ArrowRight, RefreshCw, FileCode, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useAnalysis } from '../context/AnalysisContext';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -11,12 +11,14 @@ export function AnalyzePage() {
 
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string>('');
+  const [uploadError, setUploadError] = useState<{ status?: number; message: string } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setUploadFile(e.target.files[0]);
+      setUploadError(null);
     }
   };
 
@@ -25,12 +27,14 @@ export function AnalyzePage() {
     setDragOver(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setUploadFile(e.dataTransfer.files[0]);
+      setUploadError(null);
     }
   };
 
   const startUpload = async () => {
     if (!uploadFile) return;
     setIsUploading(true);
+    setUploadError(null);
     setUploadStatus('Uploading target APK binary and decompiling manifest & bytecode...');
     try {
       const caseResult = await triggerAnalysis(uploadFile);
@@ -39,8 +43,12 @@ export function AnalyzePage() {
         navigate(`/cases/${caseResult.id}`);
       }, 600);
     } catch (err: any) {
-      setUploadStatus(`Analysis error: ${err?.message || 'Sandbox processing failed'}`);
+      setUploadStatus('');
       setIsUploading(false);
+      setUploadError({
+        status: err?.status,
+        message: err?.message || 'Sandbox processing failed',
+      });
     }
   };
 
@@ -166,6 +174,38 @@ export function AnalyzePage() {
             >
               Start analysis
             </Button>
+          </div>
+        )}
+
+        {/* Error State */}
+        {uploadError && (
+          <div className="p-4 bg-critical/10 border border-critical/30 rounded-xl space-y-3">
+            <div className="flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-critical shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Badge variant="critical" size="sm">
+                    {uploadError.status ? `HTTP ${uploadError.status}` : 'Upload error'}
+                  </Badge>
+                  <span className="text-xs font-semibold text-text">
+                    Analysis gateway error
+                  </span>
+                </div>
+                <p className="text-xs text-text-muted">{uploadError.message}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setUploadError(null);
+                  startUpload();
+                }}
+              >
+                Try again
+              </Button>
+            </div>
           </div>
         )}
 
