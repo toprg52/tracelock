@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Server, Users, Settings, Terminal, Menu } from 'lucide-react';
+import { Server, Users, Settings, Terminal, Menu, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAnalysis } from '../context/AnalysisContext';
+import { useDemoMode } from '../context/DemoModeContext';
 import { MultiSpeakerNarrator } from '../components/copilot/MultiSpeakerNarrator';
 import { ThemeToggleSwitch } from '../components/ThemeToggleSwitch';
 import { Badge } from '../components/ui/Badge';
@@ -13,14 +14,17 @@ export interface HeaderProps {
   headerNotify?: string | null;
   onOpenAnalystConsole: () => void;
   onOpenMobileNav: () => void;
+  onOpenCommandPalette?: () => void;
 }
 
 export function Header({
   headerNotify,
   onOpenAnalystConsole,
   onOpenMobileNav,
+  onOpenCommandPalette,
 }: HeaderProps) {
   const { language, setLanguage, caseData } = useAnalysis();
+  const { isDemoMode, toggleDemoMode } = useDemoMode();
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -30,7 +34,7 @@ export function Header({
     hi: 'ओटीपी इंटरसेप्शन और एक्सेसिबिलिटी दुरुपयोग के माध्यम से बैंकिंग अनुप्रयोगों को लक्षित करने वाले सक्रिय अभियानों का पता चला है।',
     te: 'OTP అంతరాయం మరియు యాక్సెసిబిలిటీ దుర్వినియోగం ద్వారా బ్యాంకింగ్ అప్లికేషన్‌లను లక్ష్యంగా చేసుకునే ప్రచారాలు కనుగొనబడ్డాయి.',
     kn: 'OTP ప్రతిబಂಧ ಮತ್ತು ಪ್ರವೇಶಿಸುವಿಕೆ ದುರುಪಯೋಗದ ಮೂಲಕ ಬ್ಯಾಂಕಿಂಗ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಗುರಿಯಾಗಿಸುವ ಸಕ್ರಿಯ ಪ್ರಚಾರಗಳು ಪತ್ತೆಯಾಗಿವೆ.',
-    ta: 'OTP இடைமறிப்பு மற்றும் அணுகல் துஷ்பிரயோகம் மூலம் வங்கி பயன்பாடுகளை இலக்காகக் கொண்ட பிரச்சாரங்கள் கண்டறியப்பட்டுள்ளன.',
+    ta: 'OTP இடைமறிப்பு மற்றும் அணுகல் துஷ்பிரயோகம் மூலம் வங்கி பயன்பாடுகளை இலக்காகக் கொண்ட பிரச்சారங்கள் கண்டறியப்பட்டுள்ளன.',
   });
 
   useEffect(() => {
@@ -53,13 +57,6 @@ export function Header({
     }
 
     if (pathname === '/dashboard') {
-      const isDemo = new URLSearchParams(search).get('demo') === '1';
-      if (isDemo) {
-        return [
-          { label: 'Dashboard', onClick: () => navigate('/dashboard') },
-          { label: 'Demo walkthrough' },
-        ];
-      }
       return [{ label: 'Dashboard' }];
     }
 
@@ -114,9 +111,9 @@ export function Header({
           </button>
         </Tooltip>
 
-        <Badge variant="neutral" size="sm" dot className="shrink-0">
-          <span className="hidden min-[380px]:inline">Local environment</span>
-          <span className="min-[380px]:hidden">Local</span>
+        <Badge variant={isDemoMode ? 'demo' : 'neutral'} size="sm" dot className="shrink-0">
+          <span className="hidden min-[380px]:inline">{isDemoMode ? 'Demo environment' : 'Local environment'}</span>
+          <span className="min-[380px]:hidden">{isDemoMode ? 'Demo' : 'Local'}</span>
         </Badge>
 
         <div className="hidden sm:block h-4 w-[1px] bg-border shrink-0" aria-hidden="true" />
@@ -134,8 +131,38 @@ export function Header({
         </div>
       )}
 
-      {/* Right Area: Analyst Console + Action Tools */}
-      <div className="flex items-center gap-1.5 sm:gap-2.5 text-text-muted shrink-0">
+      {/* Right Area: Command Palette, Demo Mode Switch, Actions */}
+      <div className="flex items-center gap-1.5 sm:gap-2 text-text-muted shrink-0">
+        {/* Command Palette Trigger Button */}
+        <Tooltip content="Open command palette (Ctrl+K)" position="bottom">
+          <button
+            type="button"
+            onClick={onOpenCommandPalette}
+            className="h-8 px-2 sm:px-2.5 rounded-md bg-surface-raised hover:bg-surface-raised/80 border border-border text-xs font-sans text-text-muted hover:text-text flex items-center gap-1.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Open command palette"
+          >
+            <Search className="w-3.5 h-3.5 text-text-muted" />
+            <kbd className="hidden md:inline font-mono text-[10px] bg-surface px-1.5 py-0.5 rounded border border-border">Ctrl K</kbd>
+          </button>
+        </Tooltip>
+
+        {/* Global Demo Mode Toggle Switch */}
+        <Tooltip content={isDemoMode ? "Disable demo mode" : "Enable demo mode"} position="bottom">
+          <button
+            type="button"
+            onClick={toggleDemoMode}
+            className={`h-8 px-2 sm:px-2.5 rounded-md border text-xs font-sans font-medium flex items-center gap-1.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+              isDemoMode
+                ? 'bg-amber-500/15 border-amber-500/30 text-amber-400 hover:bg-amber-500/25'
+                : 'bg-surface-raised border-border text-text-muted hover:text-text'
+            }`}
+            aria-label={isDemoMode ? "Disable demo mode" : "Enable demo mode"}
+          >
+            <span className={`w-2 h-2 rounded-full ${isDemoMode ? 'bg-amber-400 animate-pulse' : 'bg-text-muted'}`} />
+            <span className="hidden sm:inline">{isDemoMode ? 'Demo mode' : 'Live mode'}</span>
+          </button>
+        </Tooltip>
+
         {/* Analyst Console Button */}
         <Tooltip content="Analyst console" position="bottom">
           <button
@@ -144,8 +171,8 @@ export function Header({
             className="h-8 px-2 sm:px-2.5 rounded-md bg-surface-raised hover:bg-surface-raised/80 border border-border text-xs font-sans font-medium text-text flex items-center gap-1.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Analyst console"
           >
-            <Terminal className="w-5 h-5 text-accent shrink-0" />
-            <span className="hidden md:inline">Analyst console</span>
+            <Terminal className="w-4 h-4 text-accent shrink-0" />
+            <span className="hidden xl:inline">Analyst console</span>
           </button>
         </Tooltip>
 
@@ -154,20 +181,20 @@ export function Header({
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="h-8 px-1.5 sm:px-2 text-xs font-sans font-medium bg-surface-raised border border-border rounded-md text-text hover:border-border-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer transition-colors max-w-[62px] sm:max-w-none"
+            className="h-8 px-1.5 sm:px-2 text-xs font-sans font-medium bg-surface-raised border border-border rounded-md text-text hover:border-border-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer transition-colors max-w-[58px] sm:max-w-none"
             aria-label="Select console language"
           >
-            <option value="en">EN - {t('lang_en') || 'English'}</option>
-            <option value="hi">HI - {t('lang_hi') || 'हिंदी'}</option>
-            <option value="kn">KN - {t('lang_kn') || 'ಕನ್ನಡ'}</option>
-            <option value="ta">TA - {t('lang_ta') || 'தமிழ்'}</option>
-            <option value="te">TE - {t('lang_te') || 'తెలుగు'}</option>
-            <option value="bn">BN - {t('lang_bn') || 'বাংলা'}</option>
-            <option value="mr">MR - {t('lang_mr') || 'मराठी'}</option>
-            <option value="gu">GU - {t('lang_gu') || 'ગુજરાતી'}</option>
-            <option value="ml">ML - {t('lang_ml') || 'മലയാളം'}</option>
-            <option value="pa">PA - {t('lang_pa') || 'ਪੰਜਾਬੀ'}</option>
-            <option value="or">OR - {t('lang_or') || 'ଓଡ଼ିଆ'}</option>
+            <option value="en">EN</option>
+            <option value="hi">HI - हिंदी</option>
+            <option value="kn">KN - ಕನ್ನಡ</option>
+            <option value="ta">TA - தமிழ்</option>
+            <option value="te">TE - తెలుగు</option>
+            <option value="bn">BN - বাংলা</option>
+            <option value="mr">MR - मराठी</option>
+            <option value="gu">GU - ગુજરાતી</option>
+            <option value="ml">ML - മലയാളം</option>
+            <option value="pa">PA - ਪੰਜਾਬੀ</option>
+            <option value="or">OR - ଓଡ଼ିଆ</option>
           </select>
         </Tooltip>
 
@@ -191,7 +218,7 @@ export function Header({
             className="hidden sm:flex w-8 h-8 rounded-md items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Infrastructure telemetry"
           >
-            <Server className="w-5 h-5" />
+            <Server className="w-4 h-4" />
           </Link>
         </Tooltip>
 
@@ -202,7 +229,7 @@ export function Header({
             className="hidden sm:flex w-8 h-8 rounded-md items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Identity and role access"
           >
-            <Users className="w-5 h-5" />
+            <Users className="w-4 h-4" />
           </Link>
         </Tooltip>
 
@@ -213,7 +240,7 @@ export function Header({
             className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="System configuration"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-4 h-4" />
           </Link>
         </Tooltip>
       </div>

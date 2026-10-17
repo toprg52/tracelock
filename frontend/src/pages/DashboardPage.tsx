@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Activity, ArrowRight, Sparkles } from 'lucide-react';
 import SocCommandCenter from '../components/dashboard/SocCommandCenter';
-import { DemoWalkthroughPage } from './DemoWalkthroughPage';
 import { SocDashboardPayload } from '../types/dashboard';
 import { useAnalysis } from '../context/AnalysisContext';
+import { useDemoMode } from '../context/DemoModeContext';
+import { EmptyState } from '../components/ui/EmptyState';
+import { Button } from '../components/ui/Button';
 
 export const mockDashboardData: SocDashboardPayload = {
   metrics: {
@@ -69,16 +72,47 @@ export interface DashboardPageProps {
 
 export function DashboardPage({ onNavigateToUpload }: DashboardPageProps) {
   const { casesAnalyzed } = useAnalysis();
+  const { isDemoMode, setDemoMode } = useDemoMode();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const isDemo = searchParams.get('demo') === '1';
+  // /dashboard?demo=1 turns demo mode on
+  useEffect(() => {
+    if (searchParams.get('demo') === '1') {
+      if (!isDemoMode) {
+        setDemoMode(true);
+      }
+    }
+  }, [searchParams, isDemoMode, setDemoMode]);
 
-  if (isDemo) {
+  // When demo mode is OFF and no real cases are loaded, show empty state
+  if (!isDemoMode && casesAnalyzed === 0) {
     return (
-      <DemoWalkthroughPage
-        onGoToLiveLab={() => navigate('/analyze')}
-      />
+      <div className="py-16 max-w-2xl mx-auto">
+        <EmptyState
+          icon={<Activity className="w-8 h-8 text-text-muted" />}
+          title="No live incident telemetry"
+          description="Demo mode is disabled. No live incidents or malware cases have been recorded in this session. Submit an Android APK binary for forensic decompilation, or enable Demo mode to inspect simulated SOC telemetry."
+          action={
+            <Button
+              variant="primary"
+              iconRight={<ArrowRight className="w-4 h-4" />}
+              onClick={onNavigateToUpload || (() => navigate('/analyze'))}
+            >
+              Analyze an APK
+            </Button>
+          }
+          secondaryAction={
+            <Button
+              variant="secondary"
+              iconLeft={<Sparkles className="w-4 h-4 text-amber-400" />}
+              onClick={() => setDemoMode(true)}
+            >
+              Enable demo mode
+            </Button>
+          }
+        />
+      </div>
     );
   }
 

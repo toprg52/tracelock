@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { useDemoMode } from "./DemoModeContext";
 
 function anyMatch(text: string, words: string[]): boolean {
   return words.some(w => text.includes(w));
@@ -322,7 +323,9 @@ interface AnalysisContextType {
 const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined);
 
 export function AnalysisProvider({ children }: { children: ReactNode }) {
-  const [activeCaseId, setActiveCaseId] = useState<string | null>("case-demo-92");
+  const { isDemoMode } = useDemoMode();
+
+  const [activeCaseId, setActiveCaseId] = useState<string | null>(isDemoMode ? "case-demo-92" : null);
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [persona, setPersona] = useState<"analyst" | "officer">("analyst");
   const [language, setLanguage] = useState<string>("en");
@@ -331,16 +334,48 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     i18n.changeLanguage(language);
   }, [language]);
 
-  const [casesAnalyzed, setCasesAnalyzed] = useState<number>(142);
-  const [feedList, setFeedList] = useState<AlertItem[]>(INITIAL_THREATS);
+  const [casesAnalyzed, setCasesAnalyzed] = useState<number>(isDemoMode ? 142 : 0);
+  const [feedList, setFeedList] = useState<AlertItem[]>(isDemoMode ? INITIAL_THREATS : []);
 
-  const [caseData, setCaseData] = useState<CaseDataPayload | null>(null);
+  const [caseData, setCaseData] = useState<CaseDataPayload | null>(isDemoMode ? mockCriticalCaseData : null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [campaignGraph, setCampaignGraph] = useState<{ nodes: GraphNode[]; edges: GraphEdge[] } | null>(null);
-  const [timeline, setTimeline] = useState<TimelineEventData[] | null>(null);
-  const [executiveSummary, setExecutiveSummary] = useState<ExecutiveSummaryData | null>(null);
+  const [campaignGraph, setCampaignGraph] = useState<{ nodes: GraphNode[]; edges: GraphEdge[] } | null>(
+    isDemoMode ? mockCampaignGraphData : null
+  );
+  const [timeline, setTimeline] = useState<TimelineEventData[] | null>(
+    isDemoMode ? mockTimelineData : null
+  );
+  const [executiveSummary, setExecutiveSummary] = useState<ExecutiveSummaryData | null>(
+    isDemoMode ? mockExecutiveSummaryData : null
+  );
+
+  // Synchronize state when Demo Mode toggles
+  useEffect(() => {
+    if (isDemoMode) {
+      if (!caseData || caseData.id === "case-demo-92") {
+        setCaseData(mockCriticalCaseData);
+        setCampaignGraph(mockCampaignGraphData);
+        setTimeline(mockTimelineData);
+        setExecutiveSummary(mockExecutiveSummaryData);
+        setActiveCaseId("case-demo-92");
+      }
+      setCasesAnalyzed((prev) => (prev === 0 ? 142 : prev));
+      setFeedList((prev) => (prev.length === 0 ? INITIAL_THREATS : prev));
+    } else {
+      // Exiting demo mode: if showing mock sample, clear it
+      if (caseData?.id === "case-demo-92") {
+        setCaseData(null);
+        setActiveCaseId(null);
+        setCampaignGraph(null);
+        setTimeline(null);
+        setExecutiveSummary(null);
+        setCasesAnalyzed(0);
+        setFeedList([]);
+      }
+    }
+  }, [isDemoMode]);
 
 
   const triggerAnalysis = async (file: File) => {
@@ -624,13 +659,18 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     }
 
     if (id === "case-demo-92" || id === "demo") {
-      setCaseData(mockCriticalCaseData);
-      setCampaignGraph(mockCampaignGraphData);
-      setTimeline(mockTimelineData);
-      setExecutiveSummary(mockExecutiveSummaryData);
-      setActiveCaseId(mockCriticalCaseData.id);
+      if (isDemoMode) {
+        setCaseData(mockCriticalCaseData);
+        setCampaignGraph(mockCampaignGraphData);
+        setTimeline(mockTimelineData);
+        setExecutiveSummary(mockExecutiveSummaryData);
+        setActiveCaseId(mockCriticalCaseData.id);
+        setIsLoading(false);
+        return true;
+      }
+      // If demo mode is off, case-demo-92 does not exist
       setIsLoading(false);
-      return true;
+      return false;
     }
 
     setIsLoading(true);

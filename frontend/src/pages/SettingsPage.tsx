@@ -22,10 +22,12 @@ import {
   Moon,
   Copy,
   Check,
+  Sparkles,
 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 import { useAnalysis } from '../context/AnalysisContext';
+import { useDemoMode } from '../context/DemoModeContext';
 import { MultiSpeakerNarrator } from '../components/copilot/MultiSpeakerNarrator';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -43,6 +45,7 @@ export function SettingsPage() {
   const { t } = useTranslation();
   const { user, updateRole, logout, login, isAuthenticated } = useAuth();
   const { language, setLanguage } = useAnalysis();
+  const { isDemoMode, toggleDemoMode } = useDemoMode();
 
   // Account State
   const [copiedToken, setCopiedToken] = useState(false);
@@ -325,6 +328,38 @@ export function SettingsPage() {
               <span>Configuration successfully saved and synced with backend pipeline.</span>
             </div>
           )}
+
+          {/* Demo Mode Toggle Card */}
+          <Card className="p-5 space-y-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <h3 className="text-sm font-semibold text-text">Demo Simulation Mode</h3>
+                </div>
+                <p className="text-xs text-text-muted">
+                  When enabled, pre-analyzed Banking Trojan cases, sample MITRE matrices, and simulated IOC feeds are loaded across all dashboards.
+                </p>
+              </div>
+              <div className="flex items-center gap-2.5 shrink-0">
+                <Badge variant={isDemoMode ? 'demo' : 'neutral'} size="sm">
+                  {isDemoMode ? 'Demo active' : 'Live mode'}
+                </Badge>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isDemoMode}
+                  onClick={toggleDemoMode}
+                  className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                    isDemoMode ? 'bg-accent justify-end' : 'bg-surface-raised border border-border justify-start'
+                  }`}
+                  aria-label="Toggle demo mode"
+                >
+                  <span className={`w-4 h-4 rounded-full transition-transform ${isDemoMode ? 'bg-black' : 'bg-text-muted'}`} />
+                </button>
+              </div>
+            </div>
+          </Card>
 
           {/* System Load Stat Tiles */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

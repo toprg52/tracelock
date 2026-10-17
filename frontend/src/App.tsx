@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./context/AuthContext";
+import { DemoModeProvider } from "./context/DemoModeContext";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import { AnalysisProvider } from "./context/AnalysisContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -49,10 +50,11 @@ export default function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <WebSocketProvider>
-            <AnalysisProvider>
-              <BrowserRouter>
-                <AppShell>
+          <DemoModeProvider>
+            <WebSocketProvider>
+              <AnalysisProvider>
+                <BrowserRouter>
+                  <AppShell>
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
@@ -80,8 +82,9 @@ export default function App() {
               </BrowserRouter>
             </AnalysisProvider>
           </WebSocketProvider>
-        </AuthProvider>
-      </QueryClientProvider>
+        </DemoModeProvider>
+      </AuthProvider>
+    </QueryClientProvider>
     </ErrorBoundary>
   );
 }

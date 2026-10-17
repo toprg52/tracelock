@@ -5,6 +5,9 @@ import SidebarNav from '../components/layout/SidebarNav';
 import { Header } from './Header';
 import AICopilot from '../components/copilot/AICopilot';
 import { Drawer } from '../components/ui/Drawer';
+import { Badge } from '../components/ui/Badge';
+import { CommandPalette } from '../components/CommandPalette';
+import { useDemoMode } from '../context/DemoModeContext';
 
 export interface AppShellProps {
   headerNotify?: string | null;
@@ -15,12 +18,21 @@ export function AppShell({
   headerNotify,
   children,
 }: AppShellProps) {
-  // Navigation & Analyst Console Drawer states
+  const { isDemoMode, setDemoMode } = useDemoMode();
+
+  // Drawers and Command Palette states
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isConsoleOpen, setIsConsoleOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background text-text">
+      {/* Global Command Palette (Ctrl+K) */}
+      <CommandPalette
+        open={isCommandPaletteOpen}
+        onOpenChange={setIsCommandPaletteOpen}
+      />
+
       {/* Analyst Console Drawer */}
       <AICopilot isOpen={isConsoleOpen} onClose={() => setIsConsoleOpen(false)} />
 
@@ -116,7 +128,29 @@ export function AppShell({
           headerNotify={headerNotify}
           onOpenAnalystConsole={() => setIsConsoleOpen(true)}
           onOpenMobileNav={() => setIsMobileNavOpen(true)}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         />
+
+        {/* Persistent Demo Data Banner */}
+        {isDemoMode && (
+          <div className="bg-amber-500/10 border-b border-amber-500/20 px-3 sm:px-6 py-1.5 flex items-center justify-between text-xs text-amber-400 shrink-0 gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Badge variant="demo" size="sm" className="shrink-0">
+                Demo data
+              </Badge>
+              <span className="truncate">
+                Showing simulated malware forensics and sample telemetry. Live incident streaming paused.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDemoMode(false)}
+              className="text-[11px] font-sans font-medium text-amber-300 hover:text-white underline cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded px-1"
+            >
+              Exit demo mode
+            </button>
+          </div>
+        )}
 
         {/* Dynamic View Panels Container */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
