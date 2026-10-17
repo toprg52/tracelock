@@ -38,7 +38,7 @@ export default function SidebarNav({ activeView, onViewChange }: SidebarNavProps
       id: "ANALYSIS_LAB" as const,
       label: t('analysis_lab') || "Analysis Lab",
       icon: FlaskConical,
-      badge: "LIVE",
+      badge: "Sample",
     },
   ];
 
@@ -79,8 +79,11 @@ export default function SidebarNav({ activeView, onViewChange }: SidebarNavProps
       </div>
 
       <div className="pt-2 border-t border-[var(--sidebar-border)]">
-        <div className="px-2 mb-2 text-[10px] font-mono font-semibold uppercase tracking-wider text-[var(--sidebar-text)]">
-          THREAT INTEL STATUS
+        <div className="px-2 mb-2 flex items-center justify-between text-[10px] font-mono font-semibold uppercase tracking-wider text-[var(--sidebar-text)]">
+          <span>THREAT INTEL STATUS</span>
+          <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            Demo data
+          </span>
         </div>
         <div className="space-y-2 px-2 py-1 text-xs">
           <div className="flex items-center justify-between border-b border-[var(--sidebar-border)] pb-2 text-xs">
@@ -104,7 +107,10 @@ export default function SidebarNav({ activeView, onViewChange }: SidebarNavProps
       <div className="pt-2 border-t border-[var(--sidebar-border)]">
         <div className="px-2 mb-1.5 flex items-center justify-between text-[10px] font-mono font-semibold uppercase tracking-wider text-[var(--sidebar-text)]">
           <span className="flex items-center gap-1">
-            <Activity className="w-3 h-3 text-[var(--sidebar-active-border)]" /> TELEMETRY STREAM
+            <Activity className="w-3 h-3 text-[var(--sidebar-active-border)]" /> SAMPLE TELEMETRY
+          </span>
+          <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            Demo data
           </span>
         </div>
         <div className="bg-[rgba(255,255,255,0.08)] border border-[var(--sidebar-border)] rounded-2xl p-2 font-mono text-[10px] text-[var(--sidebar-text)] space-y-1 overflow-hidden h-28">

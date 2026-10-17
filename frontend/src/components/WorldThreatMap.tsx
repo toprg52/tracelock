@@ -152,7 +152,7 @@ export default function WorldThreatMap() {
             Global Threat Intelligence Map
           </span>
           <span className="text-[9px] font-mono border border-[var(--border)] px-2 py-0.5 rounded-2xl uppercase tracking-wider text-[var(--text-muted)]">
-            LIVE · NODE IND LEAP-205
+            SAMPLE TELEMETRY
           </span>
         </div>
         <div className="flex items-center gap-6 font-mono text-[10px]">
@@ -371,7 +371,7 @@ export default function WorldThreatMap() {
           {/* Footer */}
           <div className="px-3 py-2 border-t border-[var(--border)]">
             <div className="text-[8px] font-mono text-center uppercase tracking-wider text-[var(--text-muted)]">
-              Tracelock · Global Intel Layer · Live
+              Tracelock · Global Intel Layer · Sample
             </div>
           </div>
         </div>

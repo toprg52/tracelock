@@ -28,11 +28,16 @@ export const ServerTelemetryModal: React.FC<ServerTelemetryModalProps> = ({ isOp
               <Server className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold font-mono uppercase tracking-wider text-text-primary">
-                C2 & Infrastructure Telemetry
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold font-mono uppercase tracking-wider text-text-primary">
+                  C2 & Infrastructure Telemetry
+                </h3>
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase">
+                  Demo data
+                </span>
+              </div>
               <p className="text-xs text-text-muted font-mono">
-                Real-Time Node Health, Database Connections & Pipeline Metrics
+                Sample Node Health, Database Connections & Pipeline Metrics
               </p>
             </div>
           </div>

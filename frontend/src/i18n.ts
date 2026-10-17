@@ -5,7 +5,7 @@ const resources = {
   en: {
     translation: {
       "system_connected": "SYSTEM CONNECTED // ONLINE",
-      "node_ind": "NODE IND: LEAP-205 // THREAT INTELLIGENCE OPERATIONS // LIVE TELEMETRY",
+      "node_ind": "THREAT INTELLIGENCE OPERATIONS // SAMPLE TELEMETRY",
       "tracelock_ai": "TRACELOCK AI INTELLIGENCE BRIEFING",
       "copilot_active": "COPILOT ACTIVE",
       "confidence": "CONFIDENCE",
@@ -83,7 +83,7 @@ const resources = {
   hi: {
     translation: {
       "system_connected": "सिस्टम कनेक्टेड // ऑनलाइन",
-      "node_ind": "नोड IND: LEAP-205 // खतरा खुफिया संचालन // लाइव टेलीमेट्री",
+      "node_ind": "खतरा खुफिया संचालन // नमूना टेलीमेट्री",
       "tracelock_ai": "TRACELOCK AI इंटेलिजेंस ब्रीफिंग",
       "copilot_active": "कोपायलट सक्रिय",
       "operations": "संचालन",

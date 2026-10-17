@@ -19,12 +19,12 @@ interface AlertItem {
 const MOCK_THREATS: AlertItem[] = [
   {
     id: "mock-1",
-    caseId: "SBI-TROJAN-01",
+    caseId: "CEDARLINE-TROJAN-01",
     title: "Banking Trojan detected",
     severity: "CRITICAL",
-    description: "SBI Secure Token binary matched heuristic signature for Anubis Banking Trojan family.",
+    description: "Cedarline Secure Token binary matched heuristic signature for Anubis Banking Trojan family.",
     createdAt: new Date().toISOString(),
-    fileName: "sbi_secure_token.apk",
+    fileName: "cedarline_secure_token.apk",
     riskScore: 92,
     resolved: false
   },
@@ -57,7 +57,7 @@ const MOCK_THREATS: AlertItem[] = [
     severity: "CRITICAL",
     description: "Dangerous permission READ_SMS and RECEIVE_SMS abuse signature identified.",
     createdAt: new Date(Date.now() - 180000).toISOString(),
-    fileName: "bank_advisor.apk",
+    fileName: "cedarline_advisor.apk",
     riskScore: 88,
     resolved: false
   }
@@ -169,13 +169,16 @@ export default function LiveThreatFeed() {
         <div className="flex items-center gap-2">
           <Terminal className="w-4 h-4 text-[var(--accent)]" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] font-mono">
-            LIVE THREAT STREAM
+            SAMPLE THREAT STREAM
           </h3>
+          <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase">
+            Demo data
+          </span>
         </div>
         
         <div className="flex items-center gap-1.5 font-mono text-[9px] text-[var(--accent)] uppercase tracking-wider font-bold">
           <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></span>
-          <span>LIVE FEED</span>
+          <span>SAMPLE FEED</span>
         </div>
       </div>
 

@@ -25,7 +25,7 @@ const DEFAULT_USER: UserSession = {
   name: "Demo Analyst",
   role: "ANALYST",
   organization: "Demo Organization",
-  clearanceLevel: "LEVEL-4 RESTRICTED / CERT-IN AUTHORIZED",
+  clearanceLevel: "DEMO ACCESS",
   jwtToken: "demo_token_123",
   lastLogin: new Date().toLocaleTimeString() + " - ACTIVE SESSION"
 };

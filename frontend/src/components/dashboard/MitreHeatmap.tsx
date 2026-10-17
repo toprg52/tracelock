@@ -30,7 +30,7 @@ export default function MitreHeatmap({ cells }: MitreHeatmapProps) {
     <SocPanel
       title="MITRE ATT&CK HEATMAP MATRIX"
       subtitle="Mobile Framework v14 · Technique density mapping"
-      badge="LIVE MATRIX"
+      badge="SAMPLE MATRIX"
     >
       <div className="space-y-3 font-mono text-xs">
         {/* Legend */}

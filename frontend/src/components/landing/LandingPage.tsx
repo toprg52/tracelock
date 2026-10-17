@@ -54,7 +54,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     },
     "08_Anubis_Overlay_Trojan.apk": {
       name: "08_Anubis_Overlay_Trojan.apk",
-      pkg: "com.sbi.secure.token.anubis",
+      pkg: "com.cedarline.secure.token.anubis",
       risk: 88,
       malwareType: "Banking Trojan / Overlay Hijacker",
       permissions: ["android.permission.INTERNET", "android.permission.READ_SMS", "android.permission.RECEIVE_SMS", "android.permission.BIND_ACCESSIBILITY_SERVICE", "android.permission.SYSTEM_ALERT_WINDOW"],

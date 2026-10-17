@@ -113,7 +113,7 @@ const buildNodes = (
   });
 
   // Similar samples (hardcoded + any extra IP iocs)
-  const samples = ["sbi_secure_token.apk", "whatsapp_gold_helper.apk"];
+  const samples = ["cedarline_secure_token.apk", "whatsapp_gold_helper.apk"];
   samples.forEach((s, i) => {
     nodes.push({
       id: `sample-${i}`,
@@ -206,7 +206,7 @@ export default function ThreatCorrelationGraph({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--critical)", boxShadow: "0 0 6px var(--critical)" }} />
-            <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Live Correlation</span>
+            <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Sample Correlation</span>
           </div>
           <div className="h-3 w-px" style={{ backgroundColor: "var(--card-border)" }} />
           {Object.entries(GROUP_STYLE).map(([key, s]) => (
@@ -244,7 +244,7 @@ export default function ThreatCorrelationGraph({
           THREAT CORRELATION MATRIX
         </div>
         <div className="absolute top-3 right-3 text-[9px] font-mono uppercase tracking-widest pointer-events-none" style={{ color: "var(--text-muted)" }}>
-          IBM X-FORCE INTELLIGENCE LAYER
+          CEDARLINE THREAT INTELLIGENCE LAYER
         </div>
         <div className="absolute bottom-3 left-3 text-[9px] font-mono pointer-events-none" style={{ color: "var(--text-muted)" }}>
           Scroll to zoom · Drag canvas to pan · Click node to inspect

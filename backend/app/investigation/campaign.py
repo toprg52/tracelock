@@ -28,7 +28,7 @@ class CampaignCorrelator:
         for item in ioc.get("iocs", []):
             if item.get("type") == "IP":
                 shared_infrastructure.append(item.get("value"))
-                related_samples.append("SBI_Secure_v2.apk")
+                related_samples.append("Cedarline_Secure_v2.apk")
                 
         return CampaignCorrelations(
             confidence=confidence,

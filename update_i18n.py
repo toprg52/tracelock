@@ -6,7 +6,7 @@ with open('frontend/src/i18n.ts', 'r', encoding='utf-8') as f:
 new_keys = {
     'en': {
         'system_connected': 'SYSTEM CONNECTED // ONLINE',
-        'node_ind': 'NODE IND: LEAP-205 // THREAT INTELLIGENCE OPERATIONS // LIVE TELEMETRY',
+        'node_ind': 'THREAT INTELLIGENCE OPERATIONS // SAMPLE TELEMETRY',
         'tracelock_ai': 'TRACELOCK AI INTELLIGENCE BRIEFING',
         'copilot_active': 'COPILOT ACTIVE',
         'confidence': 'CONFIDENCE',
@@ -21,7 +21,7 @@ new_keys = {
     },
     'hi': {
         'system_connected': 'सिस्टम कनेक्टेड // ऑनलाइन',
-        'node_ind': 'नोड IND: LEAP-205 // खतरा खुफिया संचालन // लाइव टेलीमेट्री',
+        'node_ind': 'खतरा खुफिया संचालन // नमूना टेलीमेट्री',
         'tracelock_ai': 'TRACELOCK AI इंटेलिजेंस ब्रीफिंग',
         'copilot_active': 'कोपायलट सक्रिय',
         'confidence': 'आत्मविश्वास',
@@ -36,7 +36,7 @@ new_keys = {
     },
     'kn': {
         'system_connected': 'ಸಿಸ್ಟಮ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ // ಆನ್‌ಲೈನ್',
-        'node_ind': 'ನೋಡ್ IND: LEAP-205 // ಬೆದರಿಕೆ ಗುಪ್ತಚರ ಕಾರ್ಯಾಚರಣೆಗಳು // ಲೈವ್ ಟೆಲಿಮೆಟ್ರಿ',
+        'node_ind': 'ಬೆದರಿಕೆ ಗುಪ್ತಚರ ಕಾರ್ಯಾಚರಣೆಗಳು // ಮಾದರಿ ಟೆಲಿಮೆಟ್ರಿ',
         'tracelock_ai': 'TRACELOCK AI ಇಂಟೆಲಿಜೆನ್ಸ್ ಬ್ರೀಫಿಂಗ್',
         'copilot_active': 'ಕೋಪೈಲಟ್ ಸಕ್ರಿಯ',
         'confidence': 'ವಿಶ್ವಾಸ',
@@ -51,7 +51,7 @@ new_keys = {
     },
     'ta': {
         'system_connected': 'அமைப்பு இணைக்கப்பட்டுள்ளது // ஆன்லைன்',
-        'node_ind': 'முனை IND: LEAP-205 // அச்சுறுத்தல் உளவுத்துறை செயல்பாடுகள் // நேரடி டெலிமெட்ரி',
+        'node_ind': 'அச்சுறுத்தல் உளவுத்துறை செயல்பாடுகள் // மாதிரி டெலிமெட்ரி',
         'tracelock_ai': 'TRACELOCK AI உளவுத்துறை சுருக்கம்',
         'copilot_active': 'கோபிலட் செயலில் உள்ளது',
         'confidence': 'நம்பிக்கை',
@@ -66,7 +66,7 @@ new_keys = {
     },
     'te': {
         'system_connected': 'సిస్టమ్ కనెక్ట్ చేయబడింది // ఆన్‌లైన్',
-        'node_ind': 'నోడ్ IND: LEAP-205 // ముప్పు ఇంటెలిజెన్స్ కార్యకలాపాలు // లైవ్ టెలిమెట్రీ',
+        'node_ind': 'ముప్పు ఇంటెలిజెన్స్ కార్యకలాపాలు // నమూనా టెలిమెట్రీ',
         'tracelock_ai': 'TRACELOCK AI ఇంటెలిజెన్స్ బ్రీఫింగ్',
         'copilot_active': 'కోపైలట్ యాక్టివ్',
         'confidence': 'విశ్వాసం',

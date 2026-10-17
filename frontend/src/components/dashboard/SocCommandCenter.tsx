@@ -46,7 +46,7 @@ export default function SocCommandCenter({ data, onNavigateToUpload }: SocComman
             {(t('soc_command_center') || "SOC COMMAND CENTER").toUpperCase()}
           </h2>
           <p className="text-xs text-[var(--text-muted)] font-mono mt-1">
-            {t('node_ind') || "NODE IND: LEAP-205 // THREAT INTELLIGENCE OPERATIONS // LIVE TELEMETRY"}
+            {t('node_ind') || "THREAT INTELLIGENCE OPERATIONS // SAMPLE TELEMETRY"}
           </p>
         </div>
         
@@ -91,7 +91,17 @@ export default function SocCommandCenter({ data, onNavigateToUpload }: SocComman
       <AiIntelligenceBriefing />
 
       {/* KPI metrics */}
-      <SocMetricsStrip metrics={data.metrics} />
+      <div className="space-y-2">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)] font-semibold">
+            Operational Threat Metrics
+          </span>
+          <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+            Demo data
+          </span>
+        </div>
+        <SocMetricsStrip metrics={data.metrics} />
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div

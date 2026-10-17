@@ -551,7 +551,7 @@ export default function CaseDetailsClient({ caseData }: CaseDetailsClientProps) 
         </div>
       </div>
 
-      {/* TOP METRICS BOARD (CrowdStrike-style parameters) */}
+      {/* TOP METRICS BOARD */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Metric 1: Threat Family */}
         <div className="bg-card border border-card-border rounded-xl p-4.5 flex flex-col justify-between relative overflow-hidden group hover:border-primary/40 transition-all duration-200" style={{ boxShadow: "var(--shadow-card)" }}>
@@ -1068,7 +1068,7 @@ export default function CaseDetailsClient({ caseData }: CaseDetailsClientProps) 
                       <span>Threat Correlation Graph</span>
                     </h4>
                     <span className="text-[9px] font-mono text-text-muted uppercase tracking-widest">
-                      IBM X-Force · Recorded Future Style
+                      Cedarline Threat Intel · Threat Graph Matrix
                     </span>
                   </div>
                   <ThreatCorrelationGraph

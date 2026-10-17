@@ -241,12 +241,12 @@ import i18n from '../i18n';
 const INITIAL_THREATS: AlertItem[] = [
   {
     id: "mock-1",
-    caseId: "SBI-TROJAN-01",
+    caseId: "CEDARLINE-TROJAN-01",
     title: "Banking Trojan detected",
     severity: "CRITICAL",
-    description: "SBI Secure Token binary matched heuristic signature for Anubis Banking Trojan family.",
+    description: "Cedarline Secure Token binary matched heuristic signature for Anubis Banking Trojan family.",
     createdAt: new Date().toISOString(),
-    fileName: "sbi_secure_token.apk",
+    fileName: "cedarline_secure_token.apk",
     riskScore: 92,
     resolved: false
   },
@@ -279,7 +279,7 @@ const INITIAL_THREATS: AlertItem[] = [
     severity: "CRITICAL",
     description: "Dangerous permission READ_SMS and RECEIVE_SMS abuse signature identified.",
     createdAt: new Date(Date.now() - 180000).toISOString(),
-    fileName: "bank_advisor.apk",
+    fileName: "cedarline_advisor.apk",
     riskScore: 88,
     resolved: false
   }

@@ -87,10 +87,10 @@ def main():
         },
         {
             "filename": "08_Anubis_Overlay_Trojan.apk",
-            "package": "com.sbi.secure.token.anubis",
+            "package": "com.cedarline.secure.token.anubis",
             "permissions": ["android.permission.INTERNET", "android.permission.READ_SMS", "android.permission.RECEIVE_SMS", "android.permission.BIND_ACCESSIBILITY_SERVICE", "android.permission.SYSTEM_ALERT_WINDOW"],
-            "activities": ["com.sbi.secure.token.anubis.MainActivity", "com.sbi.secure.token.anubis.OverlayActivity"],
-            "services": ["com.sbi.secure.token.anubis.AccessibilityStealerService", "com.sbi.secure.token.anubis.SmsListenerService"],
+            "activities": ["com.cedarline.secure.token.anubis.MainActivity", "com.cedarline.secure.token.anubis.OverlayActivity"],
+            "services": ["com.cedarline.secure.token.anubis.AccessibilityStealerService", "com.cedarline.secure.token.anubis.SmsListenerService"],
             "urls": ["https://update-server-v3.net", "185.220.101.5"]
         },
         {
@@ -108,6 +108,30 @@ def main():
             "activities": ["com.spynote.rat.remote.access.MainActivity", "com.spynote.rat.remote.access.PayloadActivity"],
             "services": ["com.spynote.rat.remote.access.RatDaemonService", "com.spynote.rat.remote.access.KeyloggerService"],
             "urls": ["https://spynote-master-c2.net/connect", "185.220.101.99"]
+        },
+        {
+            "filename": "Legit_Banking_App.apk",
+            "package": "com.legit.cedarlinebank",
+            "permissions": ["android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE"],
+            "activities": ["com.legit.cedarlinebank.MainActivity"],
+            "services": ["com.legit.cedarlinebank.NetworkSyncService"],
+            "urls": ["https://api.cedarlinebank.com/services", "https://cedarlinebank.com/portal"]
+        },
+        {
+            "filename": "Suspicious_KYC_Update.apk",
+            "package": "com.kyc.update.secure",
+            "permissions": ["android.permission.INTERNET", "android.permission.RECEIVE_SMS", "android.permission.READ_PHONE_STATE"],
+            "activities": ["com.kyc.update.secure.MainActivity"],
+            "services": ["com.kyc.update.secure.SmsReceiverService"],
+            "urls": ["https://kyc-verification-gateway.net/update", "91.202.17.44"]
+        },
+        {
+            "filename": "Banking_Trojan_Sample.apk",
+            "package": "com.cedarline.secure.token.trojan",
+            "permissions": ["android.permission.INTERNET", "android.permission.READ_SMS", "android.permission.RECEIVE_SMS", "android.permission.BIND_ACCESSIBILITY_SERVICE", "android.permission.SYSTEM_ALERT_WINDOW"],
+            "activities": ["com.cedarline.secure.token.trojan.MainActivity", "com.cedarline.secure.token.trojan.OverlayActivity"],
+            "services": ["com.cedarline.secure.token.trojan.AccessibilityStealerService", "com.cedarline.secure.token.trojan.SmsReceiverService"],
+            "urls": ["https://secure-banking-update.com/login", "https://otp-verification-service.net", "45.88.120.10", "91.202.17.44"]
         }
     ]
 

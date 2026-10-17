@@ -12,7 +12,7 @@ const METRICS_CONFIG = [
   { key: "criticalThreats", label: "CRITICAL THREATS", subtext: "Immediate Action Required", isAccent: true, isCritical: true },
   { key: "highRiskApks", label: "HIGH RISK APKS", subtext: "Active Watchlist", isHigh: true },
   { key: "avgRisk", label: "AVG RISK SCORE", subtext: "Threshold Critical >80", suffix: "/100" },
-  { key: "iocCount", label: "ACTIVE IOCS", subtext: "Live Intel Feed", isAccent: false },
+  { key: "iocCount", label: "ACTIVE IOCS", subtext: "Sample Intel Feed", isAccent: false },
   { key: "citizenExposure", label: "CITIZEN RISK EXPOSURE", subtext: "Vulnerability Index", isExposure: true },
 ] as const;
 

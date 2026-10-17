@@ -101,7 +101,7 @@ export default function ThreatCorrelationFlow({ nodes: rawNodes, edges: rawEdges
   return (
     <SocPanel
       title="Threat Correlation Graph"
-      subtitle="IBM X-Force · Campaign infrastructure linkage"
+      subtitle="Cedarline Threat Intel · Campaign infrastructure linkage"
       badge="CORRELATION ENGINE"
       noPadding
     >

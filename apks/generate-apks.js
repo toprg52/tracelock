@@ -21,16 +21,16 @@ async function run() {
 
   // 1. Legit Banking App (Expected Risk 15-25)
   const legitManifest = `<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.legit.indianbank">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.legit.cedarlinebank">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application>
-        <activity android:name="com.legit.indianbank.MainActivity" />
-        <service android:name="com.legit.indianbank.NetworkSyncService" />
+        <activity android:name="com.legit.cedarlinebank.MainActivity" />
+        <service android:name="com.legit.cedarlinebank.NetworkSyncService" />
     </application>
 </manifest>`;
-  const legitDex = `https://api.indianbank.in/services
-https://indianbank.in/portal`;
+  const legitDex = `https://api.cedarlinebank.com/services
+https://cedarlinebank.com/portal`;
 
   // 2. Suspicious KYC Update App (Expected Risk 60-75)
   const suspiciousManifest = `<?xml version="1.0" encoding="utf-8"?>
@@ -48,17 +48,17 @@ https://indianbank.in/portal`;
 
   // 3. Banking Trojan Sample (Expected Risk 90-95)
   const trojanManifest = `<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.sbi.secure.token.trojan">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.cedarline.secure.token.trojan">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <application>
-        <activity android:name="com.sbi.secure.token.trojan.MainActivity" />
-        <activity android:name="com.sbi.secure.token.trojan.OverlayActivity" />
-        <service android:name="com.sbi.secure.token.trojan.AccessibilityStealerService" />
-        <service android:name="com.sbi.secure.token.trojan.SmsReceiverService" />
+        <activity android:name="com.cedarline.secure.token.trojan.MainActivity" />
+        <activity android:name="com.cedarline.secure.token.trojan.OverlayActivity" />
+        <service android:name="com.cedarline.secure.token.trojan.AccessibilityStealerService" />
+        <service android:name="com.cedarline.secure.token.trojan.SmsReceiverService" />
     </application>
 </manifest>`;
   const trojanDex = `https://secure-banking-update.com/login
