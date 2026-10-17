@@ -1,5 +1,7 @@
 import React from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import SocCommandCenter from '../components/dashboard/SocCommandCenter';
+import { DemoWalkthroughPage } from './DemoWalkthroughPage';
 import { SocDashboardPayload } from '../types/dashboard';
 import { useAnalysis } from '../context/AnalysisContext';
 
@@ -62,11 +64,23 @@ export const mockDashboardData: SocDashboardPayload = {
 };
 
 export interface DashboardPageProps {
-  onNavigateToUpload: () => void;
+  onNavigateToUpload?: () => void;
 }
 
 export function DashboardPage({ onNavigateToUpload }: DashboardPageProps) {
   const { casesAnalyzed } = useAnalysis();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const isDemo = searchParams.get('demo') === '1';
+
+  if (isDemo) {
+    return (
+      <DemoWalkthroughPage
+        onGoToLiveLab={() => navigate('/analyze')}
+      />
+    );
+  }
 
   return (
     <SocCommandCenter
@@ -77,7 +91,7 @@ export function DashboardPage({ onNavigateToUpload }: DashboardPageProps) {
           totalCases: casesAnalyzed,
         },
       }}
-      onNavigateToUpload={onNavigateToUpload}
+      onNavigateToUpload={onNavigateToUpload || (() => navigate('/analyze'))}
     />
   );
 }

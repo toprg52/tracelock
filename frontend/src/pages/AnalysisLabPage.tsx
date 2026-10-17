@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useAnalysis } from '../context/AnalysisContext';
+import { Button } from '../components/ui/Button';
+import { EmptyState } from '../components/ui/EmptyState';
 import {
   Shield,
   Cpu,
@@ -22,6 +25,7 @@ import BlockchainEvidencePanel from '../components/lab/BlockchainEvidencePanel';
 import ExecutiveReportPrintView from '../components/ExecutiveReportPrintView';
 
 export function AnalysisLabPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
   const {
@@ -55,13 +59,17 @@ export function AnalysisLabPage() {
 
   if (!caseData) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 bg-[var(--bg-panel)] border border-[var(--border)] rounded-2xl p-12">
-        <Shield className="w-12 h-12 text-[var(--text-muted)] opacity-40" />
-        <h3 className="text-base font-mono font-bold text-[var(--text-primary)]">NO ACTIVE CASE LOADED</h3>
-        <p className="text-xs font-mono text-[var(--text-muted)] max-w-md">
-          Submit a target Android binary (.apk) via the submission gateway to compile static and dynamic forensics telemetry.
-        </p>
-      </div>
+      <EmptyState
+        icon={<Shield className="w-8 h-8 text-text-muted" />}
+        title="No active case loaded"
+        description="Submit a target Android binary (.apk) via the forensic submission gateway to compile static and dynamic telemetry."
+        action={
+          <Button variant="primary" onClick={() => navigate('/analyze')}>
+            Analyze an APK
+          </Button>
+        }
+        className="py-16"
+      />
     );
   }
 

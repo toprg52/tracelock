@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./context/AuthContext";
 import { WebSocketProvider } from "./context/WebSocketContext";
@@ -7,10 +8,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AppShell } from "./layout/AppShell";
 import { LandingPage } from "./pages/LandingPage";
-import { DemoWalkthroughPage } from "./pages/DemoWalkthroughPage";
 import { DashboardPage } from "./pages/DashboardPage";
-import { AnalysisLabPage } from "./pages/AnalysisLabPage";
-import { UploadPage } from "./pages/UploadPage";
+import { AnalyzePage } from "./pages/AnalyzePage";
+import { CasesPage } from "./pages/CasesPage";
+import { CaseDetailsPage } from "./pages/CaseDetailsPage";
+import { IntelligencePage } from "./pages/IntelligencePage";
+import { SettingsPage } from "./pages/SettingsPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 import { DesignPreview } from "./components/DesignPreview";
 
 const queryClient = new QueryClient({
@@ -21,43 +25,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-type ActiveView = "LANDING" | "DASHBOARD" | "UPLOAD" | "ANALYSIS_LAB" | "DEMO_WALKTHROUGH";
-
-function MainAppShell() {
-  const [activeView, setActiveView] = useState<ActiveView>("LANDING");
-
-  return (
-    <AppShell activeView={activeView} onViewChange={setActiveView}>
-      {activeView === "LANDING" && (
-        <LandingPage
-          onLaunchDashboard={() => setActiveView("DASHBOARD")}
-          onUploadApk={() => setActiveView("UPLOAD")}
-        />
-      )}
-
-      {activeView === "DASHBOARD" && (
-        <DashboardPage
-          onNavigateToUpload={() => setActiveView("UPLOAD")}
-        />
-      )}
-
-      {activeView === "DEMO_WALKTHROUGH" && (
-        <DemoWalkthroughPage
-          onGoToLiveLab={() => setActiveView("ANALYSIS_LAB")}
-        />
-      )}
-
-      {activeView === "UPLOAD" && (
-        <UploadPage onViewLab={() => setActiveView("ANALYSIS_LAB")} />
-      )}
-
-      {activeView === "ANALYSIS_LAB" && (
-        <AnalysisLabPage />
-      )}
-    </AppShell>
-  );
-}
 
 export default function App() {
   const [isDesignPreview, setIsDesignPreview] = useState(() => window.location.hash === '#design-preview');
@@ -84,7 +51,33 @@ export default function App() {
         <AuthProvider>
           <WebSocketProvider>
             <AnalysisProvider>
-              <MainAppShell />
+              <BrowserRouter>
+                <AppShell>
+                  <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/analyze" element={<AnalyzePage />} />
+                    <Route path="/cases" element={<CasesPage />} />
+                    <Route path="/cases/:caseId" element={<CaseDetailsPage />} />
+                    <Route path="/intelligence" element={<IntelligencePage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+
+                    {/* Legacy redirects */}
+                    <Route path="/platform-overview" element={<Navigate to="/" replace />} />
+                    <Route path="/overview" element={<Navigate to="/" replace />} />
+                    <Route path="/soc-dashboard" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/upload" element={<Navigate to="/analyze" replace />} />
+                    <Route path="/upload-apk" element={<Navigate to="/analyze" replace />} />
+                    <Route path="/analysis-lab" element={<Navigate to="/analyze" replace />} />
+                    <Route path="/lab" element={<Navigate to="/analyze" replace />} />
+                    <Route path="/demo" element={<Navigate to="/dashboard?demo=1" replace />} />
+                    <Route path="/demo-walkthrough" element={<Navigate to="/dashboard?demo=1" replace />} />
+
+                    {/* 404 Not Found */}
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                </AppShell>
+              </BrowserRouter>
             </AnalysisProvider>
           </WebSocketProvider>
         </AuthProvider>

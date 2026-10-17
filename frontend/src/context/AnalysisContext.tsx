@@ -311,7 +311,9 @@ interface AnalysisContextType {
   executiveSummary: ExecutiveSummaryData | null;
 
   // Actions
-  triggerAnalysis: (file: File) => Promise<void>;
+  setCaseData: React.Dispatch<React.SetStateAction<CaseDataPayload | null>>;
+  loadCaseById: (id: string) => Promise<boolean>;
+  triggerAnalysis: (file: File) => Promise<CaseDataPayload>;
   appendNewCase: (filePayload: File) => void;
   resetAnalysis: () => void;
   updateBlockchainAnchor: (txHash: string, blockNumber: number, timestamp: Date) => void;
@@ -613,9 +615,86 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     setFeedList((prev) => [newAlert, ...prev].slice(0, 8));
 
     setIsLoading(false);
+    return formattedCaseData;
   };
 
+  const loadCaseById = async (id: string): Promise<boolean> => {
+    if (caseData && caseData.id === id) {
+      return true;
+    }
 
+    if (id === "case-demo-92" || id === "demo") {
+      setCaseData(mockCriticalCaseData);
+      setCampaignGraph(mockCampaignGraphData);
+      setTimeline(mockTimelineData);
+      setExecutiveSummary(mockExecutiveSummaryData);
+      setActiveCaseId(mockCriticalCaseData.id);
+      setIsLoading(false);
+      return true;
+    }
+
+    setIsLoading(true);
+    try {
+      const endpoints = [`/api/v1/cases/${id}`, `/api/cases/${id}`];
+      let data: any = null;
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep);
+          if (res.ok) {
+            data = await res.json();
+            break;
+          }
+        } catch {
+          // try next
+        }
+      }
+
+      if (data) {
+        const loaded: CaseDataPayload = {
+          id: data.id || id,
+          fileName: data.fileName || `${id}.apk`,
+          fileSize: data.fileSize || 15000000,
+          sha256: data.sha256 || "unknown",
+          status: data.status || "COMPLETED",
+          createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+          analysisMode: data.analysisMode || "DYNAMIC_AND_STATIC",
+          packageName: data.packageName || "com.analyzed.app",
+          versionCode: data.versionCode || "1.0.0",
+          permissions: typeof data.permissions === "string" ? data.permissions : JSON.stringify(data.permissions || []),
+          activities: typeof data.activities === "string" ? data.activities : JSON.stringify(data.activities || []),
+          services: typeof data.services === "string" ? data.services : JSON.stringify(data.services || []),
+          mitreTags: typeof data.mitreTags === "string" ? data.mitreTags : JSON.stringify(data.mitreTags || []),
+          threatFamily: data.threatFamily || "Suspicious APK",
+          threatConfidence: data.threatConfidence || 90,
+          iocs: typeof data.iocs === "string" ? data.iocs : JSON.stringify(data.iocs || []),
+          riskScore: data.riskScore ?? 75,
+          permissionScore: data.permissionScore ?? 80,
+          iocScore: data.iocScore ?? 70,
+          keywordScore: data.keywordScore ?? 65,
+          aiConfidence: data.aiConfidence ?? 90,
+          malwareType: data.malwareType || "Android Malware",
+          threatNarrative: typeof data.threatNarrative === "string" ? data.threatNarrative : JSON.stringify(data.threatNarrative || {}),
+          citizenImpact: typeof data.citizenImpact === "string" ? data.citizenImpact : JSON.stringify(data.citizenImpact || {}),
+          blockchainTxHash: data.blockchainTxHash || null,
+          blockchainBlock: data.blockchainBlock || null,
+          blockchainTimestamp: data.blockchainTimestamp ? new Date(data.blockchainTimestamp) : null,
+          analystReport: data.analystReport || null,
+          officerReport: data.officerReport || null,
+          multilingualReports: typeof data.multilingualReports === "string" ? data.multilingualReports : JSON.stringify(data.multilingualReports || {}),
+        };
+
+        setCaseData(loaded);
+        setActiveCaseId(loaded.id);
+        setIsLoading(false);
+        return true;
+      }
+      setIsLoading(false);
+      return false;
+    } catch {
+      setIsLoading(false);
+      return false;
+    }
+  };
 
   const appendNewCase = (filePayload: File) => {
     // 1. Increment casesAnalyzed from 142 to 143
@@ -665,6 +744,8 @@ const resetAnalysis = () => {
     <AnalysisContext.Provider
       value={{
         caseData,
+        setCaseData,
+        loadCaseById,
         isLoading,
         error,
         activeCaseId,

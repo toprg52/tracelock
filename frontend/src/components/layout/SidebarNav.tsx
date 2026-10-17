@@ -1,49 +1,47 @@
-"use client";
-
 import React from "react";
-import { LayoutDashboard, Upload, FlaskConical, Terminal, Activity } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { LayoutDashboard, Upload, FolderGit2, Globe, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Badge } from "../ui/Badge";
 
 interface SidebarNavProps {
-  activeView: "LANDING" | "DASHBOARD" | "UPLOAD" | "ANALYSIS_LAB" | "DEMO_WALKTHROUGH";
-  onViewChange: (view: "LANDING" | "DASHBOARD" | "UPLOAD" | "ANALYSIS_LAB" | "DEMO_WALKTHROUGH") => void;
   onItemClick?: () => void;
 }
 
-export default function SidebarNav({ activeView, onViewChange, onItemClick }: SidebarNavProps) {
+export default function SidebarNav({ onItemClick }: SidebarNavProps) {
   const { t } = useTranslation();
+  const location = useLocation();
+  const pathname = location.pathname;
 
   const navItems = [
     {
-      id: "LANDING" as const,
-      label: "Platform overview",
-      icon: Terminal,
-      badge: null,
-    },
-    {
-      id: "DASHBOARD" as const,
-      label: t('soc_dashboard') || "SOC dashboard",
+      to: "/dashboard",
+      label: t("soc_dashboard") || "Dashboard",
       icon: LayoutDashboard,
-      badge: null,
+      isActive: pathname === "/dashboard",
     },
     {
-      id: "DEMO_WALKTHROUGH" as const,
-      label: "Demo walkthrough",
-      icon: Activity,
-      badge: "Demo",
-    },
-    {
-      id: "UPLOAD" as const,
-      label: t('upload_apk') || "Upload APK",
+      to: "/analyze",
+      label: "Analyze",
       icon: Upload,
-      badge: null,
+      isActive: pathname === "/analyze",
     },
     {
-      id: "ANALYSIS_LAB" as const,
-      label: t('analysis_lab') || "Analysis lab",
-      icon: FlaskConical,
-      badge: null,
+      to: "/cases",
+      label: "Cases",
+      icon: FolderGit2,
+      isActive: pathname.startsWith("/cases"),
+    },
+    {
+      to: "/intelligence",
+      label: "Intelligence",
+      icon: Globe,
+      isActive: pathname.startsWith("/intelligence"),
+    },
+    {
+      to: "/settings",
+      label: "Settings",
+      icon: Settings,
+      isActive: pathname.startsWith("/settings"),
     },
   ];
 
@@ -56,15 +54,12 @@ export default function SidebarNav({ activeView, onViewChange, onItemClick }: Si
         <div className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeView === item.id;
+            const isActive = item.isActive;
             return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  onViewChange(item.id);
-                  onItemClick?.();
-                }}
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={onItemClick}
                 className={`w-full flex items-center justify-between px-3 py-2 text-xs font-sans font-medium transition-colors border-l-[3px] text-left rounded-r-md cursor-pointer outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   isActive
                     ? "border-accent bg-accent/12 text-text font-semibold"
@@ -80,12 +75,7 @@ export default function SidebarNav({ activeView, onViewChange, onItemClick }: Si
                   />
                   <span className="truncate">{item.label}</span>
                 </div>
-                {item.badge === "Demo" && (
-                  <Badge variant="demo" size="sm" className="shrink-0 ml-auto">
-                    Demo
-                  </Badge>
-                )}
-              </button>
+              </Link>
             );
           })}
         </div>

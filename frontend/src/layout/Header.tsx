@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Server, Users, Settings, Terminal, Menu } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAnalysis } from '../context/AnalysisContext';
@@ -6,32 +7,29 @@ import { MultiSpeakerNarrator } from '../components/copilot/MultiSpeakerNarrator
 import { ThemeToggleSwitch } from '../components/ThemeToggleSwitch';
 import { Badge } from '../components/ui/Badge';
 import { Tooltip } from '../components/ui/Tooltip';
+import { Breadcrumbs, BreadcrumbItem } from '../components/ui/Breadcrumbs';
 
 export interface HeaderProps {
   headerNotify?: string | null;
-  onOpenServer: () => void;
-  onOpenAuth: () => void;
-  onOpenSettings: () => void;
   onOpenAnalystConsole: () => void;
   onOpenMobileNav: () => void;
 }
 
 export function Header({
   headerNotify,
-  onOpenServer,
-  onOpenAuth,
-  onOpenSettings,
   onOpenAnalystConsole,
   onOpenMobileNav,
 }: HeaderProps) {
-  const { language, setLanguage } = useAnalysis();
+  const { language, setLanguage, caseData } = useAnalysis();
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [copilotBriefingText, setCopilotBriefingText] = useState<Record<string, string>>({
     en: 'Active campaigns detected targeting mobile banking applications via OTP interception and accessibility abuse. Immediate review of high-risk cases recommended.',
     hi: 'ओटीपी इंटरसेप्शन और एक्सेसिबिलिटी दुरुपयोग के माध्यम से बैंकिंग अनुप्रयोगों को लक्षित करने वाले सक्रिय अभियानों का पता चला है।',
     te: 'OTP అంతరాయం మరియు యాక్సెసిబిలిటీ దుర్వినియోగం ద్వారా బ్యాంకింగ్ అప్లికేషన్‌లను లక్ష్యంగా చేసుకునే ప్రచారాలు కనుగొనబడ్డాయి.',
-    kn: 'OTP ప్రతిಬಂಧ ಮತ್ತು ಪ್ರವೇಶಿಸುವಿಕೆ ದುರುಪಯೋಗದ ಮೂಲಕ ಬ್ಯಾಂಕಿಂಗ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಗುರಿಯಾಗಿಸುವ ಸಕ್ರಿಯ ಪ್ರಚಾರಗಳು ಪತ್ತೆಯಾಗಿವೆ.',
+    kn: 'OTP ప్రతిబಂಧ ಮತ್ತು ಪ್ರವೇಶಿಸುವಿಕೆ ದುರುಪಯೋಗದ ಮೂಲಕ ಬ್ಯಾಂಕಿಂಗ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಗುರಿಯಾಗಿಸುವ ಸಕ್ರಿಯ ಪ್ರಚಾರಗಳು ಪತ್ತೆಯಾಗಿವೆ.',
     ta: 'OTP இடைமறிப்பு மற்றும் அணுகல் துஷ்பிரயோகம் மூலம் வங்கி பயன்பாடுகளை இலக்காகக் கொண்ட பிரச்சாரங்கள் கண்டறியப்பட்டுள்ளன.',
   });
 
@@ -46,25 +44,86 @@ export function Header({
       .catch((err) => console.error('Failed to load briefing for narrator', err));
   }, []);
 
+  // Compute dynamic breadcrumbs based on active route
+  const getBreadcrumbs = (): BreadcrumbItem[] => {
+    const { pathname, search } = location;
+
+    if (pathname === '/' || pathname === '/platform-overview' || pathname === '/overview') {
+      return [{ label: 'Platform overview' }];
+    }
+
+    if (pathname === '/dashboard') {
+      const isDemo = new URLSearchParams(search).get('demo') === '1';
+      if (isDemo) {
+        return [
+          { label: 'Dashboard', onClick: () => navigate('/dashboard') },
+          { label: 'Demo walkthrough' },
+        ];
+      }
+      return [{ label: 'Dashboard' }];
+    }
+
+    if (pathname === '/analyze') {
+      return [{ label: 'Analyze' }];
+    }
+
+    if (pathname === '/cases') {
+      return [{ label: 'Cases' }];
+    }
+
+    if (pathname.startsWith('/cases/')) {
+      const caseId = pathname.replace('/cases/', '');
+      const label = caseData && caseData.id === caseId ? caseData.fileName : caseId;
+      return [
+        { label: 'Cases', onClick: () => navigate('/cases') },
+        { label: label || caseId },
+      ];
+    }
+
+    if (pathname.startsWith('/intelligence')) {
+      return [{ label: 'Intelligence' }];
+    }
+
+    if (pathname.startsWith('/settings')) {
+      const section = new URLSearchParams(search).get('section');
+      const sectionLabel =
+        section === 'system' ? 'System' : section === 'appearance' ? 'Appearance' : 'Account';
+      return [
+        { label: 'Settings', onClick: () => navigate('/settings') },
+        { label: sectionLabel },
+      ];
+    }
+
+    return [{ label: 'Not found' }];
+  };
+
+  const breadcrumbs = getBreadcrumbs();
+
   return (
     <header className="h-14 border-b border-border px-3 sm:px-6 flex items-center justify-between bg-surface shrink-0 z-20 gap-2">
-      {/* Left Area: Mobile Menu + Environment Indicator */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      {/* Left Area: Mobile Menu + Environment Indicator + Breadcrumbs */}
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <Tooltip content="Navigation menu" position="bottom">
           <button
             type="button"
             onClick={onOpenMobileNav}
-            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
+            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer shrink-0"
             aria-label="Open navigation menu"
           >
             <Menu className="w-5 h-5" />
           </button>
         </Tooltip>
 
-        <Badge variant="neutral" size="sm" dot>
+        <Badge variant="neutral" size="sm" dot className="shrink-0">
           <span className="hidden min-[380px]:inline">Local environment</span>
           <span className="min-[380px]:hidden">Local</span>
         </Badge>
+
+        <div className="hidden sm:block h-4 w-[1px] bg-border shrink-0" aria-hidden="true" />
+
+        <div className="hidden sm:flex items-center min-w-0">
+          <Breadcrumbs items={breadcrumbs} />
+        </div>
       </div>
 
       {/* Center Area: Optional Notification */}
@@ -125,40 +184,37 @@ export function Header({
           <ThemeToggleSwitch />
         </Tooltip>
 
-        {/* Server Telemetry */}
+        {/* Server Telemetry -> Links to /settings?section=system */}
         <Tooltip content="Infrastructure telemetry" position="bottom">
-          <button
-            type="button"
-            onClick={onOpenServer}
+          <Link
+            to="/settings?section=system"
             className="hidden sm:flex w-8 h-8 rounded-md items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Infrastructure telemetry"
           >
             <Server className="w-5 h-5" />
-          </button>
+          </Link>
         </Tooltip>
 
-        {/* User Auth */}
+        {/* User Auth -> Links to /settings?section=account */}
         <Tooltip content="Identity & access" position="bottom">
-          <button
-            type="button"
-            onClick={onOpenAuth}
+          <Link
+            to="/settings?section=account"
             className="hidden sm:flex w-8 h-8 rounded-md items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Identity and role access"
           >
             <Users className="w-5 h-5" />
-          </button>
+          </Link>
         </Tooltip>
 
-        {/* System Settings */}
+        {/* System Settings -> Links to /settings */}
         <Tooltip content="System settings" position="bottom">
-          <button
-            type="button"
-            onClick={onOpenSettings}
+          <Link
+            to="/settings?section=appearance"
             className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="System configuration"
           >
             <Settings className="w-5 h-5" />
-          </button>
+          </Link>
         </Tooltip>
       </div>
     </header>
