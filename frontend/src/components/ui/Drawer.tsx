@@ -11,6 +11,7 @@ export interface DrawerProps {
   position?: 'right' | 'left';
   size?: 'sm' | 'md' | 'lg' | 'full';
   closeOnBackdropClick?: boolean;
+  noPadding?: boolean;
   className?: string;
 }
 
@@ -24,6 +25,7 @@ export const Drawer: React.FC<DrawerProps> = ({
   position = 'right',
   size = 'md',
   closeOnBackdropClick = true,
+  noPadding = false,
   className = '',
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -146,7 +148,9 @@ export const Drawer: React.FC<DrawerProps> = ({
         )}
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">{children}</div>
+        <div className={`flex-1 min-h-0 ${noPadding ? 'flex flex-col h-full overflow-hidden' : 'overflow-y-auto p-6'}`}>
+          {children}
+        </div>
 
         {/* Footer */}
         {footer && (

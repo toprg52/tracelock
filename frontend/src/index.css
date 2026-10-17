@@ -425,6 +425,41 @@ textarea:focus-visible,
   box-shadow: none !important;
 }
 
+/* =========================================================================
+   INTERACTION & FOCUS ACCESSIBILITY
+   ========================================================================= */
+/* Ensure mouse clicks never show focus outlines, while keyboard Tab does */
+button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+select:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Soft tinted background utilities (~12-15% opacity) */
+.bg-accent\/12 {
+  background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+.bg-accent\/15 {
+  background-color: color-mix(in srgb, var(--color-accent) 15%, transparent);
+}
+.bg-critical\/15 {
+  background-color: color-mix(in srgb, var(--color-critical) 15%, transparent);
+}
+.bg-high\/15 {
+  background-color: color-mix(in srgb, var(--color-high) 15%, transparent);
+}
+.bg-medium\/15 {
+  background-color: color-mix(in srgb, var(--color-medium) 15%, transparent);
+}
+.bg-low\/15 {
+  background-color: color-mix(in srgb, var(--color-low) 15%, transparent);
+}
+.bg-info\/15 {
+  background-color: color-mix(in srgb, var(--color-info) 15%, transparent);
+}
+
 
 /* =========================================================================
    PRINT STYLES

@@ -29,15 +29,16 @@ export const ThemeToggleSwitch: React.FC = () => {
 
   return (
     <button
+      type="button"
       onClick={toggleTheme}
-      className="p-1.5 rounded-2xl border border-[var(--border)] bg-[var(--bg-panel)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer flex items-center justify-center font-mono text-xs"
-      title={isLight ? "Switch to Dark Mode" : "Switch to Light Mode"}
-      aria-label="Toggle Light/Dark Theme"
+      className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      title={isLight ? "Switch to dark theme" : "Switch to light theme"}
+      aria-label={isLight ? "Switch to dark theme" : "Switch to light theme"}
     >
       {isLight ? (
-        <Sun className="h-4 w-4 text-[var(--accent)]" />
+        <Sun className="w-5 h-5 text-accent" />
       ) : (
-        <Moon className="h-4 w-4 text-[var(--text-primary)]" />
+        <Moon className="w-5 h-5 text-text" />
       )}
     </button>
   );

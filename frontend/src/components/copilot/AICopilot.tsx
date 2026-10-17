@@ -1,13 +1,18 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from "react";
-import { Terminal } from "lucide-react";
 import ChatPanel from "./ChatPanel";
+import { Drawer } from "../ui/Drawer";
 import {
   CopilotAction,
   CopilotCaseContext,
   CopilotMessage,
 } from "@/types/copilot";
+
+export interface AICopilotProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
 function createMessage(role: CopilotMessage["role"], content: string): CopilotMessage {
   return {
@@ -25,10 +30,12 @@ function detectPage(pathname: string): CopilotCaseContext["page"] {
   return "other";
 }
 
-export default function AICopilot() {
+export default function AICopilot({ isOpen: controlledIsOpen, onClose: controlledOnClose }: AICopilotProps = {}) {
   const pathname = typeof window !== 'undefined' ? window.location.pathname : "/";
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const onClose = controlledOnClose || (() => setInternalIsOpen(false));
+
   const [messages, setMessages] = useState<CopilotMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -191,37 +198,26 @@ export default function AICopilot() {
   const handleSuggestedPrompt = (prompt: string) => sendMessage(prompt);
 
   return (
-    <>
-      {!isOpen && (
-        <button
-          onClick={() => {
-            setIsOpen(true);
-            setIsMinimized(false);
-          }}
-          className="fixed bottom-4 right-4 z-[100] flex items-center gap-2 bg-[var(--bg-panel)] hover:bg-[var(--bg-panel-alt)] text-[var(--text-primary)] border border-[var(--border)] font-mono text-xs font-medium px-3.5 py-2 rounded-2xl transition-colors no-print cursor-pointer"
-          aria-label="Open Analyst Console"
-        >
-          <Terminal className="w-4 h-4 text-[var(--accent)]" />
-          <span>ANALYST CONSOLE</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-cool)]" />
-        </button>
-      )}
-
+    <Drawer
+      isOpen={isOpen}
+      onClose={onClose}
+      position="right"
+      size="md"
+      noPadding
+    >
       <ChatPanel
         isOpen={isOpen}
-        isMinimized={isMinimized}
         messages={messages}
         input={input}
         loading={loading}
         context={caseContext}
         suggestedPrompts={suggestedPrompts}
-        onClose={() => setIsOpen(false)}
-        onMinimize={() => setIsMinimized((v: boolean) => !v)}
+        onClose={onClose}
         onInputChange={setInput}
         onSend={handleSend}
         onAction={handleAction}
         onSuggestedPrompt={handleSuggestedPrompt}
       />
-    </>
+    </Drawer>
   );
 }

@@ -7,7 +7,8 @@ export type BadgeVariant =
   | 'low'
   | 'info'
   | 'neutral'
-  | 'success';
+  | 'success'
+  | 'demo';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
@@ -61,6 +62,10 @@ export const Badge: React.FC<BadgeProps> = ({
     neutral: {
       badge: 'bg-surface-raised text-text-muted',
       dot: 'bg-text-muted',
+    },
+    demo: {
+      badge: 'bg-high/15 text-high',
+      dot: 'bg-high',
     },
   };
 

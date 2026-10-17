@@ -111,13 +111,15 @@ export const MultiSpeakerNarrator: React.FC<MultiSpeakerNarratorProps> = ({
 
   return (
     <button
+      type="button"
       onClick={toggleNarrator}
-      className={`p-2 rounded-full transition-all cursor-pointer ${
+      className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
         isPlaying
-          ? "bg-primary/20 text-primary shadow-[0_0_15px_var(--primary-glow)] animate-pulse"
-          : "bg-card border border-card-border text-text-muted hover:text-text-primary hover:border-primary/50"
+          ? "bg-accent/15 text-accent animate-pulse"
+          : "text-text-muted hover:text-text hover:bg-surface-raised"
       }`}
-      title={isPlaying ? "Stop Narration" : "Read Summary Aloud (Text to Speech)"}
+      title={isPlaying ? "Stop narration" : "Read summary aloud"}
+      aria-label={isPlaying ? "Stop audio narration" : "Read summary aloud (text to speech)"}
     >
       {isPlaying ? (
         <VolumeX className="w-5 h-5" />
