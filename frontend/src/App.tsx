@@ -32,6 +32,8 @@ import { SystemSettingsModal } from "./components/settings/SystemSettingsModal";
 import { ServerTelemetryModal } from "./components/server/ServerTelemetryModal";
 import { MultiSpeakerNarrator } from './components/copilot/MultiSpeakerNarrator';
 import { useTranslation } from 'react-i18next';
+import { DesignPreview } from './components/DesignPreview';
+
 
 // Modular Lab Components
 import SecurityAnalystPanel from "./components/lab/SecurityAnalystPanel";
@@ -564,6 +566,24 @@ function MainAppShell() {
 }
 
 export default function App() {
+  const [isDesignPreview, setIsDesignPreview] = useState(() => window.location.hash === '#design-preview');
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setIsDesignPreview(window.location.hash === '#design-preview');
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  if (isDesignPreview) {
+    return (
+      <ErrorBoundary>
+        <DesignPreview onExit={() => { window.location.hash = ''; }} />
+      </ErrorBoundary>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -579,3 +599,4 @@ export default function App() {
     </ErrorBoundary>
   );
 }
+

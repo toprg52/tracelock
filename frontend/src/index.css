@@ -4,221 +4,330 @@
 
 :root,
 html.dark {
-  /* Dark Mode — Near-black Plum / Aubergine Base (#151118) + Soft Mint (#98E2C6) & Dusty Pink (#F2A6C4) Accent */
-  --bg-base: #151118;
-  --bg-panel: #1C1721;
-  --bg-panel-alt: #241E2A;
-  --border: #322B3A;
-  --text-primary: #E5DFEC;
-  --text-muted: #8D8398;
-  --accent: #98E2C6;       /* Soft Mint */
-  --accent-cool: #F2A6C4;  /* Dusty Pink */
-  --accent-warm: #E06D85;  /* Muted Rose-Dust */
+  /* =========================================================================
+     DESIGN SYSTEM TOKENS — DARK THEME
+     ========================================================================= */
+  --color-bg: #0B0F14;
+  --color-surface: #121923;
+  --color-surface-raised: #161D28;
+  --color-border: #263041;
+  --color-text: #E6EAF0;
+  --color-text-muted: #8B96A7;
+  --color-accent: #3DDC97;
+  --color-critical: #F05D6C;
+  --color-high: #F59E4B;
+  --color-medium: #F2C94C;
+  --color-low: #4CC38A;
+  --color-info: #5B9DF5;
+  --btn-accent-text: #0B0F14; /* 10.87:1 AAA contrast on #3DDC97 */
 
-  --severity-critical: #E06D85;
-  --severity-high: #E89568;
-  --severity-medium: #DDB967;
-  --severity-low: #98E2C6;
+  /* =========================================================================
+     COMPATIBILITY MAPPINGS (Preserves existing screen styles)
+     ========================================================================= */
+  --bg-base: var(--color-bg);
+  --bg-panel: var(--color-surface);
+  --bg-panel-alt: var(--color-surface-raised);
+  --border: var(--color-border);
+  --text-primary: var(--color-text);
+  --text-muted: var(--color-text-muted);
+  --text-secondary: var(--color-text-muted);
+  --accent: var(--color-accent);
+  --accent-cool: var(--color-info);
+  --accent-warm: var(--color-critical);
 
-  /* Backward compatibility aliases */
-  --background: #151118;
-  --foreground: #E5DFEC;
-  --card: #1C1721;
-  --card-border: #322B3A;
-  --card-bg-secondary: #241E2A;
-  --primary: #98E2C6;
-  --primary-hover: #7FD2B4;
+  --severity-critical: var(--color-critical);
+  --severity-high: var(--color-high);
+  --severity-medium: var(--color-medium);
+  --severity-low: var(--color-low);
+
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-border: var(--color-border);
+  --card-bg-secondary: var(--color-surface-raised);
+  --primary: var(--color-accent);
+  --primary-hover: #2bc783;
   --primary-glow: transparent;
-  --critical: #E06D85;
-  --high: #E89568;
-  --medium: #DDB967;
-  --low: #98E2C6;
-  --safe: #98E2C6;
+  --critical: var(--color-critical);
+  --high: var(--color-high);
+  --medium: var(--color-medium);
+  --low: var(--color-low);
+  --safe: var(--color-low);
 
-  --bg-page: #151118;
-  --bg-sidebar: #151118;
-  --sidebar-border: #322B3A;
-  --sidebar-text: #8D8398;
-  --sidebar-text-active: #E5DFEC;
-  --sidebar-item-hover: #1C1721;
-  --sidebar-active-bg: #1C1721;
-  --sidebar-active-border: #98E2C6;
-  
-  --bg-header: #151118;
-  --header-border: #322B3A;
-  --bg-main: #151118;
-  --briefing-bg: #1C1721;
-  
-  --text-secondary: #8D8398;
-  --card-dot-color: #98E2C6;
-  --btn-copilot-text: #151118;
+  --bg-page: var(--color-bg);
+  --bg-sidebar: var(--color-surface);
+  --sidebar-bg: var(--color-surface);
+  --sidebar-border: var(--color-border);
+  --sidebar-text: var(--color-text-muted);
+  --sidebar-text-active: var(--color-text);
+  --sidebar-item-hover: var(--color-surface-raised);
+  --sidebar-active-bg: var(--color-surface-raised);
+  --sidebar-active-border: var(--color-accent);
 
-  --shadow-card: none;
-  --radius-card: 4px;
+  --bg-header: var(--color-surface);
+  --header-border: var(--color-border);
+  --bg-main: var(--color-bg);
+  --briefing-bg: var(--color-surface);
 
-  /* SVG maps & charts variables */
-  --map-bg: #151118;
-  --map-continent-fill: #241E2A;
-  --map-continent-stroke: #322B3A;
-  --map-grid-line: rgba(50, 43, 58, 0.6);
-  --map-side-bg: #1C1721;
-  --map-side-border: #322B3A;
-  --graph-bg: #151118;
-  --graph-grid-line: rgba(50, 43, 58, 0.4);
+  --card-dot-color: var(--color-accent);
+  --btn-copilot-text: var(--btn-accent-text);
 
-  /* Node graph colors */
-  --node-center-stroke: #E06D85;
-  --node-center-fill: #241E2A;
-  --node-domain-stroke: #E89568;
-  --node-domain-fill: #241E2A;
-  --node-ip-stroke: #E06D85;
-  --node-ip-fill: #241E2A;
-  --node-family-stroke: #98E2C6;
-  --node-family-fill: #241E2A;
-  --node-mitre-stroke: #F2A6C4;
-  --node-mitre-fill: #241E2A;
-  --node-sample-stroke: #98E2C6;
-  --node-sample-fill: #241E2A;
+  --radius-card: 12px;
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
 
-  /* MITRE cells background & border */
-  --mitre-critical-bg: rgba(224, 109, 133, 0.15);
-  --mitre-critical-text: #E06D85;
-  --mitre-critical-border: rgba(224, 109, 133, 0.35);
-  --mitre-high-bg: rgba(232, 149, 104, 0.15);
-  --mitre-high-text: #E89568;
-  --mitre-high-border: rgba(232, 149, 104, 0.35);
-  --mitre-medium-bg: rgba(221, 185, 103, 0.15);
-  --mitre-medium-text: #DDB967;
-  --mitre-medium-border: rgba(221, 185, 103, 0.35);
-  --mitre-low-bg: #241E2A;
-  --mitre-low-text: #8D8398;
-  --mitre-low-border: #322B3A;
+  /* Status Colors / Badge Backgrounds & Borders */
+  --critical-color: var(--color-critical);
+  --critical-bg: rgba(240, 93, 108, 0.12);
+  --critical-border: rgba(240, 93, 108, 0.28);
+
+  --high-color: var(--color-high);
+  --high-bg: rgba(245, 158, 75, 0.12);
+  --high-border: rgba(245, 158, 75, 0.28);
+
+  --medium-color: var(--color-medium);
+  --medium-bg: rgba(242, 201, 76, 0.12);
+  --medium-border: rgba(242, 201, 76, 0.28);
+
+  --low-color: var(--color-low);
+  --low-bg: rgba(76, 195, 138, 0.12);
+  --low-border: rgba(76, 195, 138, 0.28);
+
+  --info-color: var(--color-info);
+  --info-bg: rgba(91, 157, 245, 0.12);
+  --info-border: rgba(91, 157, 245, 0.28);
+
+  /* SVG Maps & Threat Graph Canvas */
+  --map-bg: var(--color-bg);
+  --map-continent-fill: var(--color-surface-raised);
+  --map-continent-stroke: var(--color-border);
+  --map-grid-line: rgba(35, 44, 58, 0.6);
+  --map-side-bg: var(--color-surface);
+  --map-side-border: var(--color-border);
+  --graph-bg: var(--color-bg);
+  --graph-grid-line: rgba(35, 44, 58, 0.4);
+
+  /* Node Graph Colors & Glows */
+  --node-center-stroke: var(--color-critical);
+  --node-center-fill: var(--color-surface-raised);
+  --node-center-glow: rgba(240, 93, 108, 0.35);
+
+  --node-domain-stroke: var(--color-high);
+  --node-domain-fill: var(--color-surface-raised);
+  --node-domain-glow: rgba(245, 158, 75, 0.35);
+
+  --node-ip-stroke: var(--color-critical);
+  --node-ip-fill: var(--color-surface-raised);
+  --node-ip-glow: rgba(240, 93, 108, 0.35);
+
+  --node-family-stroke: var(--color-accent);
+  --node-family-fill: var(--color-surface-raised);
+  --node-family-glow: rgba(61, 220, 151, 0.35);
+
+  --node-mitre-stroke: var(--color-info);
+  --node-mitre-fill: var(--color-surface-raised);
+  --node-mitre-glow: rgba(91, 157, 245, 0.35);
+
+  --node-sample-stroke: var(--color-accent);
+  --node-sample-fill: var(--color-surface-raised);
+  --node-sample-glow: rgba(61, 220, 151, 0.35);
+
+  /* Risk Intelligence Wheel Segments */
+  --wheel-0-color: var(--color-critical);
+  --wheel-0-glow: rgba(240, 93, 108, 0.3);
+  --wheel-1-color: var(--color-info);
+  --wheel-1-glow: rgba(91, 157, 245, 0.3);
+  --wheel-2-color: var(--color-high);
+  --wheel-2-glow: rgba(245, 158, 75, 0.3);
+  --wheel-3-color: var(--color-medium);
+  --wheel-3-glow: rgba(242, 201, 76, 0.3);
+  --wheel-4-color: var(--color-critical);
+  --wheel-4-glow: rgba(240, 93, 108, 0.3);
+  --wheel-5-color: var(--color-accent);
+  --wheel-5-glow: rgba(61, 220, 151, 0.3);
+
+  /* MITRE Cells */
+  --mitre-critical-bg: var(--critical-bg);
+  --mitre-critical-text: var(--critical-color);
+  --mitre-critical-border: var(--critical-border);
+  --mitre-high-bg: var(--high-bg);
+  --mitre-high-text: var(--high-color);
+  --mitre-high-border: var(--high-border);
+  --mitre-medium-bg: var(--medium-bg);
+  --mitre-medium-text: var(--medium-color);
+  --mitre-medium-border: var(--medium-border);
+  --mitre-low-bg: var(--low-bg);
+  --mitre-low-text: var(--low-color);
+  --mitre-low-border: var(--low-border);
 }
-
-/*
-  =============================================================================
-  SAVED BACKUP: SWAPPED LIGHT MODE V2 — WHITE BASE (#FFFFFF) + LILAC PANELS (#F3F0F7)
-  =============================================================================
-  --bg-base: #FFFFFF;
-  --bg-panel: #F3F0F7;
-  --bg-panel-alt: #E7E2F0;
-  --border: #DAD4E6;
-  --text-primary: #241F2E;
-  --text-muted: #756E85;
-  --accent: #6B4EFF;
-  =============================================================================
-*/
 
 html.light,
 :root.light,
 .light {
-  /* ENCRYPT CMP GLASSMORPHISM THEME: Gradient Base (#f5f2ff, #ece8ff) + Pastel Glass Cards */
-  --bg-base: linear-gradient(135deg, #f5f2ff, #ece8ff);
-  --bg-panel: rgba(255, 255, 255, 0.68);
-  --bg-panel-alt: rgba(235, 230, 245, 0.6);
-  --border: rgba(90, 66, 149, 0.15);
-  --text-primary: #2d2352;
-  --text-muted: #8b7fb0;
-  --accent: #5a4295;
-  --accent-cool: #3aab8a;
-  --accent-warm: #c8186a;
+  /* =========================================================================
+     DESIGN SYSTEM TOKENS — LIGHT THEME (Flat, Crisp, WCAG AA Compliant)
+     ========================================================================= */
+  --color-bg: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #F1F3F6;
+  --color-border: #E2E6EC;
+  --color-text: #121821;
+  --color-text-muted: #5B6676;
 
-  --severity-critical: #c8186a;
-  --severity-high: #c07a10;
-  --severity-medium: #d9a726;
-  --severity-low: #3aab8a;
+  /* WCAG AA Adjusted Status Palette (≥4.5:1 text contrast on light surfaces) */
+  --color-accent: #087F5B;   /* Adjusted from #0E9F6E to achieve 4.5:1 on #F7F8FA */
+  --color-critical: #C92A3E; /* Adjusted from #D6354A to achieve 4.86:1 on #F1F3F6 */
+  --color-high: #9E5600;     /* Adjusted from #C9740F to achieve 4.99:1 on #F1F3F6 */
+  --color-medium: #876500;   /* Adjusted from #A87E00 to achieve 4.85:1 on #F1F3F6 */
+  --color-low: #14754D;      /* Adjusted from #1F8F5F to achieve 5.13:1 on #F1F3F6 */
+  --color-info: #1D62C9;     /* Adjusted from #2A6FD6 to achieve 5.19:1 on #F1F3F6 */
+  --btn-accent-text: #FFFFFF;
 
-  --background: #f5f2ff;
-  --foreground: #2d2352;
-  --card: rgba(255, 255, 255, 0.68);
-  --card-border: rgba(255, 255, 255, 0.45);
-  --card-bg-secondary: rgba(235, 230, 245, 0.6);
-  --primary: #5a4295;
-  --primary-hover: #4a3280;
+  /* =========================================================================
+     COMPATIBILITY MAPPINGS (Flat Light Mode, No Glassmorphism)
+     ========================================================================= */
+  --bg-base: var(--color-bg);
+  --bg-panel: var(--color-surface);
+  --bg-panel-alt: var(--color-surface-raised);
+  --border: var(--color-border);
+  --text-primary: var(--color-text);
+  --text-muted: var(--color-text-muted);
+  --text-secondary: var(--color-text-muted);
+  --accent: var(--color-accent);
+  --accent-cool: var(--color-info);
+  --accent-warm: var(--color-critical);
+
+  --severity-critical: var(--color-critical);
+  --severity-high: var(--color-high);
+  --severity-medium: var(--color-medium);
+  --severity-low: var(--color-low);
+
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-border: var(--color-border);
+  --card-bg-secondary: var(--color-surface-raised);
+  --primary: var(--color-accent);
+  --primary-hover: #066d4e;
   --primary-glow: transparent;
-  --critical: #c8186a;
-  --high: #c07a10;
-  --medium: #d9a726;
-  --low: #3aab8a;
-  --safe: #3aab8a;
+  --critical: var(--color-critical);
+  --high: var(--color-high);
+  --medium: var(--color-medium);
+  --low: var(--color-low);
+  --safe: var(--color-low);
 
-  --bg-page: transparent;
-  --bg-sidebar: #5a4295;
-  --sidebar-border: rgba(255, 255, 255, 0.15);
-  --sidebar-text: rgba(255, 255, 255, 0.72);
-  --sidebar-text-active: #ffffff;
-  --sidebar-item-hover: rgba(255, 255, 255, 0.18);
-  --sidebar-active-bg: rgba(255, 255, 255, 0.26);
-  --sidebar-active-border: #b8f0e0;
+  --bg-page: var(--color-bg);
+  --bg-sidebar: var(--color-surface);
+  --sidebar-bg: var(--color-surface);
+  --sidebar-border: var(--color-border);
+  --sidebar-text: var(--color-text-muted);
+  --sidebar-text-active: var(--color-text);
+  --sidebar-item-hover: var(--color-surface-raised);
+  --sidebar-active-bg: var(--color-surface-raised);
+  --sidebar-active-border: var(--color-accent);
 
-  --bg-header: rgba(255, 255, 255, 0.55);
-  --header-border: rgba(255, 255, 255, 0.35);
-  --bg-main: transparent;
-  --briefing-bg: rgba(255, 255, 255, 0.68);
+  --bg-header: var(--color-surface);
+  --header-border: var(--color-border);
+  --bg-main: var(--color-bg);
+  --briefing-bg: var(--color-surface);
 
-  --text-secondary: #8b7fb0;
-  --card-dot-color: #5a4295;
-  --btn-copilot-text: #FFFFFF;
-  --radius-card: 20px;
+  --card-dot-color: var(--color-accent);
+  --btn-copilot-text: var(--btn-accent-text);
 
-  /* SVG maps & charts variables - Glass Light Mode */
-  --map-bg: transparent;
-  --map-continent-fill: rgba(235, 230, 245, 0.7);
-  --map-continent-stroke: rgba(90, 66, 149, 0.2);
-  --map-grid-line: rgba(90, 66, 149, 0.12);
-  --map-side-bg: rgba(255, 255, 255, 0.68);
-  --map-side-border: rgba(255, 255, 255, 0.45);
-  --graph-bg: transparent;
-  --graph-grid-line: rgba(90, 66, 149, 0.12);
+  --radius-card: 12px;
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
 
-  /* MITRE cells - Light Mode (pastel, matches ENCRYPT CMP accent palette) */
-  --mitre-critical-bg: rgba(200, 24, 106, 0.12);
-  --mitre-critical-text: #9d1261;
-  --mitre-critical-border: rgba(200, 24, 106, 0.30);
-  --mitre-high-bg: rgba(192, 122, 16, 0.12);
-  --mitre-high-text: #8a5c0c;
-  --mitre-high-border: rgba(192, 122, 16, 0.30);
-  --mitre-medium-bg: rgba(217, 167, 38, 0.14);
-  --mitre-medium-text: #8a6a10;
-  --mitre-medium-border: rgba(217, 167, 38, 0.30);
-  --mitre-low-bg: rgba(235, 230, 245, 0.8);
-  --mitre-low-text: #8b7fb0;
-  --mitre-low-border: rgba(90, 66, 149, 0.15);
+  /* Status Colors / Badge Backgrounds & Borders */
+  --critical-color: var(--color-critical);
+  --critical-bg: rgba(201, 42, 62, 0.08);
+  --critical-border: rgba(201, 42, 62, 0.25);
+
+  --high-color: var(--color-high);
+  --high-bg: rgba(158, 86, 0, 0.08);
+  --high-border: rgba(158, 86, 0, 0.25);
+
+  --medium-color: var(--color-medium);
+  --medium-bg: rgba(135, 101, 0, 0.08);
+  --medium-border: rgba(135, 101, 0, 0.25);
+
+  --low-color: var(--color-low);
+  --low-bg: rgba(20, 117, 77, 0.08);
+  --low-border: rgba(20, 117, 77, 0.25);
+
+  --info-color: var(--color-info);
+  --info-bg: rgba(29, 98, 201, 0.08);
+  --info-border: rgba(29, 98, 201, 0.25);
+
+  /* SVG Maps & Threat Graph Canvas */
+  --map-bg: var(--color-bg);
+  --map-continent-fill: var(--color-surface-raised);
+  --map-continent-stroke: var(--color-border);
+  --map-grid-line: rgba(226, 230, 236, 0.8);
+  --map-side-bg: var(--color-surface);
+  --map-side-border: var(--color-border);
+  --graph-bg: var(--color-bg);
+  --graph-grid-line: rgba(226, 230, 236, 0.6);
+
+  /* Node Graph Colors & Glows (Light Mode) */
+  --node-center-stroke: var(--color-critical);
+  --node-center-fill: var(--color-surface-raised);
+  --node-center-glow: rgba(201, 42, 62, 0.2);
+
+  --node-domain-stroke: var(--color-high);
+  --node-domain-fill: var(--color-surface-raised);
+  --node-domain-glow: rgba(158, 86, 0, 0.2);
+
+  --node-ip-stroke: var(--color-critical);
+  --node-ip-fill: var(--color-surface-raised);
+  --node-ip-glow: rgba(201, 42, 62, 0.2);
+
+  --node-family-stroke: var(--color-accent);
+  --node-family-fill: var(--color-surface-raised);
+  --node-family-glow: rgba(8, 127, 91, 0.2);
+
+  --node-mitre-stroke: var(--color-info);
+  --node-mitre-fill: var(--color-surface-raised);
+  --node-mitre-glow: rgba(29, 98, 201, 0.2);
+
+  --node-sample-stroke: var(--color-accent);
+  --node-sample-fill: var(--color-surface-raised);
+  --node-sample-glow: rgba(8, 127, 91, 0.2);
+
+  /* Risk Intelligence Wheel Segments (Light Mode) */
+  --wheel-0-color: var(--color-critical);
+  --wheel-0-glow: rgba(201, 42, 62, 0.2);
+  --wheel-1-color: var(--color-info);
+  --wheel-1-glow: rgba(29, 98, 201, 0.2);
+  --wheel-2-color: var(--color-high);
+  --wheel-2-glow: rgba(158, 86, 0, 0.2);
+  --wheel-3-color: var(--color-medium);
+  --wheel-3-glow: rgba(135, 101, 0, 0.2);
+  --wheel-4-color: var(--color-critical);
+  --wheel-4-glow: rgba(201, 42, 62, 0.2);
+  --wheel-5-color: var(--color-accent);
+  --wheel-5-glow: rgba(8, 127, 91, 0.2);
+
+  /* MITRE Cells (Light Mode) */
+  --mitre-critical-bg: var(--critical-bg);
+  --mitre-critical-text: var(--critical-color);
+  --mitre-critical-border: var(--critical-border);
+  --mitre-high-bg: var(--high-bg);
+  --mitre-high-text: var(--high-color);
+  --mitre-high-border: var(--high-border);
+  --mitre-medium-bg: var(--medium-bg);
+  --mitre-medium-text: var(--medium-color);
+  --mitre-medium-border: var(--medium-border);
+  --mitre-low-bg: var(--low-bg);
+  --mitre-low-text: var(--low-color);
+  --mitre-low-border: var(--low-border);
 }
 
-/* User-requested Glassmorphic class */
-.glass {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(18px);
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-}
-
-html.light body,
-:root.light body,
-.light body {
-  background: linear-gradient(135deg, #f5f2ff, #ece8ff) !important;
-  background-attachment: fixed !important;
-}
-
-html.light .bg-\[var\(--bg-panel\)\],
-:root.light .bg-\[var\(--bg-panel\)\] {
-  background: rgba(255, 255, 255, 0.68) !important;
-  backdrop-filter: blur(18px) !important;
-  box-shadow: 0 12px 40px rgba(90, 66, 149, 0.13) !important;
-}
-
-html.light .bg-\[var\(--bg-panel-alt\)\],
-:root.light .bg-\[var\(--bg-panel-alt\)\] {
-  background: rgba(235, 230, 245, 0.6) !important;
-  backdrop-filter: blur(14px) !important;
-}
-
+/* =========================================================================
+   GLOBAL BASE & TYPOGRAPHY
+   ========================================================================= */
 body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  font-family: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter Variable', Inter, 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Gujarati', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   margin: 0;
   padding: 0;
@@ -226,76 +335,100 @@ body {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-html.light body,
-:root.light body,
-.light body {
-  font-family: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
-}
-
 code, pre, .font-mono {
-  font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace !important;
+  font-family: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace !important;
 }
 
-/* Custom forensic scrollbar */
+/* Tabular Numerals for Metrics and Monospace Data */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* =========================================================================
+   ACCESSIBILITY: FOCUS-VISIBLE RING & MOTION PREFERENCE
+   ========================================================================= */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================================
+   CUSTOM SCROLLBAR
+   ========================================================================= */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-base);
+  background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 2px;
+  background: var(--color-border);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: var(--color-text-muted);
 }
 
-/* Explicit high-contrast text utility classes */
+/* Explicit high-contrast utility classes */
 .theme-text-primary {
-  color: var(--text-primary) !important;
+  color: var(--color-text) !important;
 }
-
 .theme-text-muted {
-  color: var(--text-muted) !important;
+  color: var(--color-text-muted) !important;
 }
-
 .theme-accent {
-  color: var(--accent) !important;
+  color: var(--color-accent) !important;
 }
-
-.theme-accent-cool {
-  color: var(--accent-cool) !important;
-}
-
 .theme-bg-panel {
-  background-color: var(--bg-panel) !important;
+  background-color: var(--color-surface) !important;
 }
-
 .theme-bg-panel-alt {
-  background-color: var(--bg-panel-alt) !important;
+  background-color: var(--color-surface-raised) !important;
 }
-
 .theme-border {
-  border-color: var(--border) !important;
+  border-color: var(--color-border) !important;
 }
 
-/* Grid lines overlay for SOC radar/graphs */
-.bg-cyber-grid {
-  background-size: 24px 24px;
-  background-image: 
-    linear-gradient(to right, var(--border) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+/* Eyebrow utility: 11px uppercase tracking-wide, used sparingly and nowhere by default */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
-/* Operational standard 1px hairline border panel override */
+/* Hairline border panel override */
 .border-glow {
-  border-color: var(--border) !important;
+  border-color: var(--color-border) !important;
   box-shadow: none !important;
 }
 
-/* Print Styles */
+
+/* =========================================================================
+   PRINT STYLES
+   ========================================================================= */
 @media print {
   @page {
     size: A4 portrait;
@@ -324,3 +457,4 @@ code, pre, .font-mono {
     background: #ffffff !important;
   }
 }
+
