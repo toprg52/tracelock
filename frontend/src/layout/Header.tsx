@@ -84,7 +84,13 @@ export function Header({
     if (pathname.startsWith('/settings')) {
       const section = new URLSearchParams(search).get('section');
       const sectionLabel =
-        section === 'system' ? 'System' : section === 'appearance' ? 'Appearance' : 'Account';
+        section === 'system'
+          ? 'System status'
+          : section === 'appearance'
+          ? 'Appearance'
+          : section === 'demo'
+          ? 'Demo mode'
+          : 'Account & Persona';
       return [
         { label: 'Settings', onClick: () => navigate('/settings') },
         { label: sectionLabel },

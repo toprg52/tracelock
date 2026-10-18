@@ -460,6 +460,22 @@ select:focus:not(:focus-visible) {
   background-color: color-mix(in srgb, var(--color-info) 15%, transparent);
 }
 
+/* =========================================================================
+   DISPLAY DENSITY TOKENS
+   ========================================================================= */
+html[data-density="compact"],
+.density-compact {
+  --spacing-density-card: 0.75rem;
+  --spacing-density-py: 0.35rem;
+  --spacing-density-px: 0.5rem;
+}
+
+html[data-density="compact"] table td,
+html[data-density="compact"] table th {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+}
+
 
 /* =========================================================================
    PRINT STYLES

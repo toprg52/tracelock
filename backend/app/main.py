@@ -89,6 +89,12 @@ app.include_router(uploads.router, prefix=f"{settings.API_V1_STR}/uploads", tags
 app.include_router(reports.router, prefix=f"{settings.API_V1_STR}/reports", tags=["Reports"])
 app.include_router(campaigns.router, prefix=f"{settings.API_V1_STR}/campaigns", tags=["Campaigns"])
 app.include_router(system.router, prefix=f"{settings.API_V1_STR}/system", tags=["System"])
+
+@app.get(f"{settings.API_V1_STR}/health", tags=["Health"])
+@app.get("/api/v1/health", tags=["Health"])
+async def direct_health_endpoint():
+    return await system.health_check()
+
 app.include_router(ai.router, prefix=f"{settings.API_V1_STR}/ai", tags=["AI"])
 app.include_router(ai.router, prefix="/api/copilot", tags=["AI Copilot Direct"])
 app.include_router(risk.router, prefix=f"{settings.API_V1_STR}/risk", tags=["Risk"])

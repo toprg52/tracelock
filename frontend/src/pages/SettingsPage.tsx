@@ -1,81 +1,133 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Users,
-  Cpu,
-  Palette,
-  Shield,
-  Key,
-  LogOut,
-  CheckCircle2,
-  UserCheck,
-  BadgeCheck,
-  RefreshCw,
-  Sliders,
-  Database,
-  Volume2,
-  Save,
-  Server,
   Activity,
+  Palette,
+  Sparkles,
+  Server,
+  Database,
+  Layers,
+  HardDrive,
+  GitFork,
+  Cpu,
+  ShieldCheck,
+  Check,
+  Copy,
+  RefreshCw,
   Sun,
   Moon,
-  Copy,
-  Check,
-  Sparkles,
+  CheckCircle2,
+  AlertTriangle,
+  BadgeCheck,
+  UserCheck,
+  LogOut,
+  Sliders,
+  Radio,
+  FileCode,
+  Shield,
+  Clock,
+  Info,
 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 import { useAnalysis } from '../context/AnalysisContext';
 import { useDemoMode } from '../context/DemoModeContext';
-import { MultiSpeakerNarrator } from '../components/copilot/MultiSpeakerNarrator';
+import { api } from '../lib/api';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Card } from '../components/ui/Card';
+import { Tooltip } from '../components/ui/Tooltip';
 
-type SettingsSection = 'account' | 'system' | 'appearance';
+export type SettingsSection = 'system' | 'account' | 'appearance' | 'demo';
+
+interface HealthServices {
+  postgres: 'ok' | 'unreachable' | string;
+  redis: 'ok' | 'unreachable' | string;
+  rabbitmq: 'ok' | 'unreachable' | string;
+  neo4j: 'ok' | 'unreachable' | string;
+  minio: 'ok' | 'unreachable' | string;
+  gemini: 'ok' | 'not_configured' | 'unreachable' | string;
+  ethereum: 'ok' | 'not_configured' | 'unreachable' | string;
+}
+
+interface HealthResponse {
+  status: 'ok' | 'degraded';
+  services: HealthServices;
+}
 
 export function SettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentSectionParam = (searchParams.get('section') as SettingsSection) || 'account';
-  const activeSection: SettingsSection = ['account', 'system', 'appearance'].includes(currentSectionParam)
-    ? currentSectionParam
-    : 'account';
+  const currentSectionParam = searchParams.get('section') as SettingsSection | null;
+  const activeSection: SettingsSection =
+    currentSectionParam && ['system', 'account', 'appearance', 'demo'].includes(currentSectionParam)
+      ? currentSectionParam
+      : 'system';
 
   const { t } = useTranslation();
   const { user, updateRole, logout, login, isAuthenticated } = useAuth();
   const { language, setLanguage } = useAnalysis();
-  const { isDemoMode, toggleDemoMode } = useDemoMode();
+  const { isDemoMode, setDemoMode, toggleDemoMode } = useDemoMode();
 
-  // Account State
+  // ==========================================
+  // System Health State
+  // ==========================================
+  const [healthData, setHealthData] = useState<HealthResponse | null>(null);
+  const [isHealthLoading, setIsHealthLoading] = useState(false);
+  const [healthError, setHealthError] = useState<string | null>(null);
+  const [lastHealthCheck, setLastHealthCheck] = useState<Date | null>(null);
+
+  const fetchHealth = useCallback(async () => {
+    setIsHealthLoading(true);
+    setHealthError(null);
+    try {
+      const res = await api.get<HealthResponse>('/health');
+      if (res.data && res.data.services) {
+        setHealthData(res.data);
+        setLastHealthCheck(new Date());
+      } else {
+        throw new Error('Invalid health response format');
+      }
+    } catch (err: any) {
+      // Fallback probe attempt to /system/health in case of reverse proxy divergence
+      try {
+        const fallbackRes = await api.get<HealthResponse>('/system/health');
+        if (fallbackRes.data && fallbackRes.data.services) {
+          setHealthData(fallbackRes.data);
+          setLastHealthCheck(new Date());
+          return;
+        }
+      } catch {
+        // Fallback also failed
+      }
+      setHealthError(err?.response?.data?.detail || err?.message || 'Failed to connect to backend health probe');
+      setHealthData(null);
+    } finally {
+      setIsHealthLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchHealth();
+  }, [fetchHealth]);
+
+  // ==========================================
+  // Account & Persona State
+  // ==========================================
   const [copiedToken, setCopiedToken] = useState(false);
   const [authStatusMessage, setAuthStatusMessage] = useState<string | null>(null);
 
-  // System Settings State
-  const [geminiModel, setGeminiModel] = useState('gemini-1.5-pro');
-  const [temperature, setTemperature] = useState(0.2);
-  const [heuristicThreshold, setHeuristicThreshold] = useState(75);
-  const [autoBlocklist, setAutoBlocklist] = useState(true);
-  const [rpcEndpoint, setRpcEndpoint] = useState('http://127.0.0.1:8545');
-  const [contractAddress, setContractAddress] = useState('0x5FbDB2315678afecb367f032d93F642f64180aa3');
-  const [soundAlerts, setSoundAlerts] = useState(true);
-  const [savedStatus, setSavedStatus] = useState(false);
-
-  // Appearance State
+  // ==========================================
+  // Appearance State (Theme, Density, Language)
+  // ==========================================
   const [isLightMode, setIsLightMode] = useState(() => {
     return localStorage.getItem('theme') === 'light';
   });
 
-  // Handle URL hash anchor scrolling (e.g. /settings?section=system#nodes)
-  useEffect(() => {
-    if (window.location.hash) {
-      const id = window.location.hash.replace('#', '');
-      const el = document.getElementById(id);
-      if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-      }
-    }
-  }, [activeSection]);
+  const [density, setDensity] = useState<'comfortable' | 'compact'>(() => {
+    return (localStorage.getItem('tracelock_density') as 'comfortable' | 'compact') || 'comfortable';
+  });
 
   const handleSectionChange = (section: SettingsSection) => {
     setSearchParams({ section });
@@ -90,15 +142,8 @@ export function SettingsPage() {
 
   const handleRoleChange = (role: 'ANALYST' | 'BANK_OFFICER' | 'CITIZEN' | 'AUDITOR' | 'ADMIN') => {
     updateRole(role);
-    setAuthStatusMessage(`Operational Persona updated to ${role}`);
+    setAuthStatusMessage(`Operational Persona updated to ${role.replace('_', ' ')}`);
     setTimeout(() => setAuthStatusMessage(null), 2500);
-  };
-
-  const handleSaveSystemConfig = () => {
-    setSavedStatus(true);
-    setTimeout(() => {
-      setSavedStatus(false);
-    }, 2000);
   };
 
   const toggleTheme = (theme: 'dark' | 'light') => {
@@ -113,14 +158,28 @@ export function SettingsPage() {
     }
   };
 
-  // Node telemetry mock data
-  const telemetryNodes = [
-    { name: 'FastAPI Cyber Core Service', port: '8000', status: 'HEALTHY', latency: '18 ms', group: 'Backend API' },
-    { name: 'Gemini 1.5 LLM Gateway', port: '443', status: 'ONLINE', latency: '142 ms', group: 'AI Engine' },
-    { name: 'SQLite / PostgreSQL Relational DB', port: '5432', status: 'HEALTHY', latency: '4 ms', group: 'Database' },
-    { name: 'Neo4j Malware DNA Graph Engine', port: '7687', status: 'HEALTHY', latency: '12 ms', group: 'Graph Engine' },
-    { name: 'Ethereum EVM Smart Contract Node', port: '8545', status: 'ANCHORED', latency: '2 ms', group: 'Blockchain' },
-  ];
+  const changeDensity = (newDensity: 'comfortable' | 'compact') => {
+    setDensity(newDensity);
+    localStorage.setItem('tracelock_density', newDensity);
+    document.documentElement.setAttribute('data-density', newDensity);
+    if (newDensity === 'compact') {
+      document.documentElement.classList.add('density-compact');
+    } else {
+      document.documentElement.classList.remove('density-compact');
+    }
+  };
+
+  useEffect(() => {
+    // Initialise density attribute on document root
+    const saved = localStorage.getItem('tracelock_density');
+    if (saved === 'compact') {
+      document.documentElement.setAttribute('data-density', 'compact');
+      document.documentElement.classList.add('density-compact');
+    } else {
+      document.documentElement.setAttribute('data-density', 'comfortable');
+      document.documentElement.classList.remove('density-compact');
+    }
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 py-2">
@@ -128,14 +187,31 @@ export function SettingsPage() {
       <div className="space-y-1">
         <h2 className="text-xl font-bold tracking-tight text-text">Platform Settings</h2>
         <p className="text-xs text-text-muted">
-          Manage identity clearance, operational persona, backend telemetry pipelines, and interface preferences.
+          Real-time microservice health, operational role clearance, interface styling, and simulation environments.
         </p>
       </div>
 
       {/* Section Navigation Tabs */}
-      <div className="flex border-b border-border gap-1 overflow-x-auto">
+      <div className="flex border-b border-border gap-1 overflow-x-auto" role="tablist">
         <button
           type="button"
+          role="tab"
+          aria-selected={activeSection === 'system'}
+          onClick={() => handleSectionChange('system')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-sans font-medium transition-colors border-b-2 cursor-pointer ${
+            activeSection === 'system'
+              ? 'border-accent text-text font-semibold'
+              : 'border-transparent text-text-muted hover:text-text hover:bg-surface-raised/40'
+          }`}
+        >
+          <Activity className={`w-4 h-4 ${activeSection === 'system' ? 'text-accent' : 'text-text-muted'}`} />
+          <span>System status</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeSection === 'account'}
           onClick={() => handleSectionChange('account')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-sans font-medium transition-colors border-b-2 cursor-pointer ${
             activeSection === 'account'
@@ -144,24 +220,13 @@ export function SettingsPage() {
           }`}
         >
           <Users className={`w-4 h-4 ${activeSection === 'account' ? 'text-accent' : 'text-text-muted'}`} />
-          <span>Account & Identity</span>
+          <span>Account & persona</span>
         </button>
 
         <button
           type="button"
-          onClick={() => handleSectionChange('system')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-sans font-medium transition-colors border-b-2 cursor-pointer ${
-            activeSection === 'system'
-              ? 'border-accent text-text font-semibold'
-              : 'border-transparent text-text-muted hover:text-text hover:bg-surface-raised/40'
-          }`}
-        >
-          <Cpu className={`w-4 h-4 ${activeSection === 'system' ? 'text-accent' : 'text-text-muted'}`} />
-          <span>System & Telemetry</span>
-        </button>
-
-        <button
-          type="button"
+          role="tab"
+          aria-selected={activeSection === 'appearance'}
           onClick={() => handleSectionChange('appearance')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs font-sans font-medium transition-colors border-b-2 cursor-pointer ${
             activeSection === 'appearance'
@@ -170,12 +235,317 @@ export function SettingsPage() {
           }`}
         >
           <Palette className={`w-4 h-4 ${activeSection === 'appearance' ? 'text-accent' : 'text-text-muted'}`} />
-          <span>Appearance & Audio</span>
+          <span>Appearance</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeSection === 'demo'}
+          onClick={() => handleSectionChange('demo')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-sans font-medium transition-colors border-b-2 cursor-pointer ${
+            activeSection === 'demo'
+              ? 'border-accent text-text font-semibold'
+              : 'border-transparent text-text-muted hover:text-text hover:bg-surface-raised/40'
+          }`}
+        >
+          <Sparkles className={`w-4 h-4 ${activeSection === 'demo' ? 'text-amber-400' : 'text-text-muted'}`} />
+          <span>Demo mode</span>
         </button>
       </div>
 
       {/* ========================================================= */}
-      {/* SECTION 1: ACCOUNT & IDENTITY                             */}
+      {/* SECTION 1: SYSTEM STATUS (REAL DATA)                       */}
+      {/* ========================================================= */}
+      {activeSection === 'system' && (
+        <div className="space-y-6">
+          {/* Status Header Overview Card */}
+          <Card className="p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2.5">
+                  <Server className="w-5 h-5 text-accent" />
+                  <h3 className="text-sm font-semibold text-text">Microservices Connectivity & Diagnostics</h3>
+                  {isHealthLoading ? (
+                    <Badge variant="info" size="sm" dot pulse>
+                      Probing...
+                    </Badge>
+                  ) : healthError ? (
+                    <Badge variant="critical" size="sm" dot>
+                      Backend unreachable
+                    </Badge>
+                  ) : healthData?.status === 'ok' ? (
+                    <Badge variant="low" size="sm" dot pulse>
+                      All core services OK
+                    </Badge>
+                  ) : (
+                    <Badge variant="critical" size="sm" dot>
+                      Service degraded
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-text-muted">
+                  Live connectivity telemetry verified directly via backend diagnostic probes. Zero secrets or sensitive credentials exposed.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {lastHealthCheck && (
+                  <span className="text-[11px] font-mono text-text-muted flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-text-muted" />
+                    {lastHealthCheck.toLocaleTimeString()}
+                  </span>
+                )}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  iconLeft={<RefreshCw className={`w-3.5 h-3.5 ${isHealthLoading ? 'animate-spin text-accent' : ''}`} />}
+                  onClick={fetchHealth}
+                  disabled={isHealthLoading}
+                >
+                  Refresh status
+                </Button>
+              </div>
+            </div>
+
+            {healthError && (
+              <div className="p-3 rounded-lg bg-critical/10 border border-critical/30 text-xs text-critical flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{healthError}</span>
+              </div>
+            )}
+          </Card>
+
+          {/* Infrastructure Node Matrix */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-text">Core Infrastructure Services</h3>
+                <p className="text-xs text-text-muted">
+                  Active connection handshakes for relational persistence, task queues, in-memory caches, and graph engines.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {/* 1. PostgreSQL */}
+              <div className="p-4 rounded-xl border border-border bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="p-2 rounded-lg bg-surface-raised border border-border text-accent shrink-0">
+                    <Database className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-text truncate">PostgreSQL Database</span>
+                      <span className="font-mono text-[11px] text-text-muted">Port 5432</span>
+                    </div>
+                    <p className="text-[11px] text-text-muted truncate">
+                      Primary relational store for case dossiers, forensic metadata, and authentication sessions.
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {isHealthLoading && !healthData ? (
+                    <Badge variant="neutral" size="sm">Checking...</Badge>
+                  ) : healthData?.services.postgres === 'ok' ? (
+                    <Badge variant="low" size="sm" dot>OK</Badge>
+                  ) : (
+                    <Badge variant="critical" size="sm" dot>Unreachable</Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* 2. Redis */}
+              <div className="p-4 rounded-xl border border-border bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="p-2 rounded-lg bg-surface-raised border border-border text-accent shrink-0">
+                    <Layers className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-text truncate">Redis Cache & PubSub</span>
+                      <span className="font-mono text-[11px] text-text-muted">Port 6379</span>
+                    </div>
+                    <p className="text-[11px] text-text-muted truncate">
+                      In-memory data store for live analysis caching, job lock arbitration, and event telemetry.
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {isHealthLoading && !healthData ? (
+                    <Badge variant="neutral" size="sm">Checking...</Badge>
+                  ) : healthData?.services.redis === 'ok' ? (
+                    <Badge variant="low" size="sm" dot>OK</Badge>
+                  ) : (
+                    <Badge variant="critical" size="sm" dot>Unreachable</Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* 3. RabbitMQ */}
+              <div className="p-4 rounded-xl border border-border bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="p-2 rounded-lg bg-surface-raised border border-border text-accent shrink-0">
+                    <Radio className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-text truncate">RabbitMQ Task Broker</span>
+                      <span className="font-mono text-[11px] text-text-muted">Port 5672</span>
+                    </div>
+                    <p className="text-[11px] text-text-muted truncate">
+                      Asynchronous message bus dispatching APK decompilation and dynamic sandbox tasks to workers.
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {isHealthLoading && !healthData ? (
+                    <Badge variant="neutral" size="sm">Checking...</Badge>
+                  ) : healthData?.services.rabbitmq === 'ok' ? (
+                    <Badge variant="low" size="sm" dot>OK</Badge>
+                  ) : (
+                    <Badge variant="critical" size="sm" dot>Unreachable</Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* 4. Neo4j */}
+              <div className="p-4 rounded-xl border border-border bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="p-2 rounded-lg bg-surface-raised border border-border text-accent shrink-0">
+                    <GitFork className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-text truncate">Neo4j Malware DNA Graph Engine</span>
+                      <span className="font-mono text-[11px] text-text-muted">Port 7687</span>
+                    </div>
+                    <p className="text-[11px] text-text-muted truncate">
+                      Graph database performing threat actor clustering, shared signing certificate links, and C2 correlation.
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {isHealthLoading && !healthData ? (
+                    <Badge variant="neutral" size="sm">Checking...</Badge>
+                  ) : healthData?.services.neo4j === 'ok' ? (
+                    <Badge variant="low" size="sm" dot>OK</Badge>
+                  ) : (
+                    <Badge variant="critical" size="sm" dot>Unreachable</Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* 5. MinIO */}
+              <div className="p-4 rounded-xl border border-border bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="p-2 rounded-lg bg-surface-raised border border-border text-accent shrink-0">
+                    <HardDrive className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-text truncate">MinIO Object Storage</span>
+                      <span className="font-mono text-[11px] text-text-muted">Port 9000</span>
+                    </div>
+                    <p className="text-[11px] text-text-muted truncate">
+                      S3-compatible immutable vault storing raw uploaded APK binaries and decompiled forensic artifacts.
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {isHealthLoading && !healthData ? (
+                    <Badge variant="neutral" size="sm">Checking...</Badge>
+                  ) : healthData?.services.minio === 'ok' ? (
+                    <Badge variant="low" size="sm" dot>OK</Badge>
+                  ) : (
+                    <Badge variant="critical" size="sm" dot>Unreachable</Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* AI & Blockchain Integrations Matrix */}
+          <div className="space-y-3 pt-2">
+            <div>
+              <h3 className="text-sm font-semibold text-text">External Intelligence & Ledger Integrations</h3>
+              <p className="text-xs text-text-muted">
+                Status reflects active configuration variables. Services display "Not configured" when API keys or contracts are unset.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              {/* Google Gemini */}
+              <div className="p-4 rounded-xl border border-border bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="p-2 rounded-lg bg-surface-raised border border-border text-accent shrink-0">
+                    <Cpu className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-text truncate">Google Gemini Reasoning LLM</span>
+                      <span className="font-mono text-[11px] text-text-muted">GEMINI_API_KEY</span>
+                    </div>
+                    <p className="text-[11px] text-text-muted truncate">
+                      Multi-agent forensic signal synthesis and automated 11-language citizen advisory generation.
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {isHealthLoading && !healthData ? (
+                    <Badge variant="neutral" size="sm">Checking...</Badge>
+                  ) : healthData?.services.gemini === 'ok' ? (
+                    <Badge variant="low" size="sm" dot>Configured</Badge>
+                  ) : (
+                    <Badge variant="neutral" size="sm" dot>Not configured</Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Ethereum Web3 */}
+              <div className="p-4 rounded-xl border border-border bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="p-2 rounded-lg bg-surface-raised border border-border text-accent shrink-0">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-text truncate">Ethereum Web3 Evidence Anchor</span>
+                      <span className="font-mono text-[11px] text-text-muted">VITE_CONTRACT_ADDRESS</span>
+                    </div>
+                    <p className="text-[11px] text-text-muted truncate">
+                      Tamper-proof cryptographic custody receipts and courtroom evidence proofs anchored to EVM blockchain.
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  {isHealthLoading && !healthData ? (
+                    <Badge variant="neutral" size="sm">Checking...</Badge>
+                  ) : healthData?.services.ethereum === 'ok' ? (
+                    <Badge variant="low" size="sm" dot>Configured</Badge>
+                  ) : (
+                    <Badge variant="neutral" size="sm" dot>Not configured</Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Security & Audit Note */}
+          <div className="p-4 rounded-xl bg-surface-raised/40 border border-border text-xs text-text-muted flex items-start gap-3">
+            <Info className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <span className="font-semibold text-text block">Zero-Secret Telemetry Assurance</span>
+              <p className="text-[11px] leading-relaxed">
+                Health probes verify handshake reachability with sub-second timeouts. Internal database credentials, secret keys, authorization tokens, and private keys are never transmitted or displayed in client telemetry.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* SECTION 2: ACCOUNT & PERSONA                              */}
       {/* ========================================================= */}
       {activeSection === 'account' && (
         <div className="space-y-6">
@@ -221,22 +591,22 @@ export function SettingsPage() {
             </div>
           </Card>
 
-          {/* Role Switcher */}
+          {/* Role / Persona Switcher */}
           <div className="space-y-3">
             <div>
               <h3 className="text-sm font-semibold text-text">Operational Persona (RBAC Scope)</h3>
               <p className="text-xs text-text-muted">
-                Switching personas filters specialized lab views and analytical toolsets.
+                Switching personas changes investigation perspectives, analytical views, and compliance filters.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {[
-                { id: 'ANALYST', label: 'SOC Analyst', desc: 'Technical APK decompilation, YARA signatures & bytecode disassembly' },
-                { id: 'BANK_OFFICER', label: 'Bank Officer', desc: 'GRC compliance, DPDP Act 2023 directives & incident risk control' },
-                { id: 'CITIZEN', label: 'Citizen / Public', desc: 'Public exposure advisory, scam warnings & vernacular summaries' },
-                { id: 'AUDITOR', label: 'Legal Auditor', desc: 'Chain-of-custody proofs, EVM block receipts & courtroom evidence' },
-                { id: 'ADMIN', label: 'Sys Administrator', desc: 'Heuristics thresholds, LLM orchestration & C2 pipeline configuration' },
+                { id: 'ANALYST', label: 'SOC Analyst', desc: 'Technical APK decompilation, YARA bytecode signatures & network telemetry' },
+                { id: 'BANK_OFFICER', label: 'Bank Officer', desc: 'GRC compliance, DPDP Act 2023 directives & customer fraud impact control' },
+                { id: 'CITIZEN', label: 'Citizen / Public', desc: 'Public exposure advisories, scam warnings & vernacular audio summaries' },
+                { id: 'AUDITOR', label: 'Legal Auditor', desc: 'Chain-of-custody proofs, EVM block receipts & courtroom evidence integrity' },
+                { id: 'ADMIN', label: 'Sys Administrator', desc: 'Heuristics thresholds, LLM orchestration & microservice pipeline routing' },
               ].map((roleSpec) => {
                 const isSelected = user.role === roleSpec.id;
                 return (
@@ -269,7 +639,7 @@ export function SettingsPage() {
           <Card className="p-4 space-y-2">
             <div className="flex justify-between items-center text-xs">
               <span className="flex items-center gap-1.5 font-medium text-text">
-                <Key className="w-3.5 h-3.5 text-accent" />
+                <FileCode className="w-3.5 h-3.5 text-accent" />
                 <span>Active JWT Session Token</span>
               </span>
               <Button
@@ -318,233 +688,7 @@ export function SettingsPage() {
       )}
 
       {/* ========================================================= */}
-      {/* SECTION 2: SYSTEM & TELEMETRY                             */}
-      {/* ========================================================= */}
-      {activeSection === 'system' && (
-        <div className="space-y-6">
-          {savedStatus && (
-            <div className="p-3 rounded-lg bg-surface-raised border border-border text-xs text-text flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
-              <span>Configuration successfully saved and synced with backend pipeline.</span>
-            </div>
-          )}
-
-          {/* Demo Mode Toggle Card */}
-          <Card className="p-5 space-y-3">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <h3 className="text-sm font-semibold text-text">Demo Simulation Mode</h3>
-                </div>
-                <p className="text-xs text-text-muted">
-                  When enabled, pre-analyzed Banking Trojan cases, sample MITRE matrices, and simulated IOC feeds are loaded across all dashboards.
-                </p>
-              </div>
-              <div className="flex items-center gap-2.5 shrink-0">
-                <Badge variant={isDemoMode ? 'demo' : 'neutral'} size="sm">
-                  {isDemoMode ? 'Demo active' : 'Live mode'}
-                </Badge>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={isDemoMode}
-                  onClick={toggleDemoMode}
-                  className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                    isDemoMode ? 'bg-accent justify-end' : 'bg-surface-raised border border-border justify-start'
-                  }`}
-                  aria-label="Toggle demo mode"
-                >
-                  <span className={`w-4 h-4 rounded-full transition-transform ${isDemoMode ? 'bg-black' : 'bg-text-muted'}`} />
-                </button>
-              </div>
-            </div>
-          </Card>
-
-          {/* System Load Stat Tiles */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="p-4 rounded-xl bg-surface border border-border flex flex-col items-center justify-center space-y-1">
-              <span className="text-xs text-text-muted">CPU load</span>
-              <span className="text-2xl font-bold font-mono text-accent">14%</span>
-            </div>
-            <div className="p-4 rounded-xl bg-surface border border-border flex flex-col items-center justify-center space-y-1">
-              <span className="text-xs text-text-muted">RAM allocated</span>
-              <span className="text-2xl font-bold font-mono text-accent">3.8 GB</span>
-            </div>
-            <div className="p-4 rounded-xl bg-surface border border-border flex flex-col items-center justify-center space-y-1">
-              <span className="text-xs text-text-muted">Average latency</span>
-              <span className="text-2xl font-bold font-mono text-accent">24 ms</span>
-            </div>
-          </div>
-
-          {/* AI Copilot Parameters */}
-          <Card className="p-5 space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-border">
-              <Cpu className="w-4 h-4 text-accent" />
-              <h3 className="text-sm font-semibold text-text">AI Copilot Engine Parameters</h3>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="space-y-1.5">
-                <label htmlFor="gemini-model-select" className="block text-text-muted font-medium">
-                  Active Gemini LLM model
-                </label>
-                <select
-                  id="gemini-model-select"
-                  value={geminiModel}
-                  onChange={(e) => setGeminiModel(e.target.value)}
-                  className="w-full h-9 px-3 rounded-lg bg-surface-raised border border-border text-xs text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer"
-                >
-                  <option value="gemini-1.5-pro">Google Gemini 1.5 Pro (Deep forensic reasoning)</option>
-                  <option value="gemini-1.5-flash">Google Gemini 1.5 Flash (Ultra-fast streaming)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5 pt-2">
-                <div className="flex justify-between text-text-muted font-medium">
-                  <span>LLM temperature (Determinism vs Creativity)</span>
-                  <span className="font-mono text-accent font-semibold">{temperature}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0.0"
-                  max="1.0"
-                  step="0.05"
-                  value={temperature}
-                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                  className="w-full accent-accent cursor-pointer"
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Threat Thresholds */}
-          <Card className="p-5 space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-border">
-              <Sliders className="w-4 h-4 text-accent" />
-              <h3 className="text-sm font-semibold text-text">Threat & Alert Thresholds</h3>
-            </div>
-
-            <div className="space-y-4 text-xs">
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-text-muted font-medium">
-                  <span>Minimum threat index threshold for critical triage</span>
-                  <span className="font-mono text-severity-critical font-semibold">{heuristicThreshold} / 100</span>
-                </div>
-                <input
-                  type="range"
-                  min="40"
-                  max="95"
-                  step="5"
-                  value={heuristicThreshold}
-                  onChange={(e) => setHeuristicThreshold(parseInt(e.target.value, 10))}
-                  className="w-full accent-severity-critical cursor-pointer"
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-surface-raised border border-border">
-                <div>
-                  <span className="text-text font-medium block">Automated C2 sinkhole generation</span>
-                  <span className="text-text-muted text-[11px]">Generate IP & domain blocklists for firewall sync</span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={autoBlocklist}
-                  onChange={(e) => setAutoBlocklist(e.target.checked)}
-                  className="w-4 h-4 accent-accent cursor-pointer"
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Ethereum Web3 Evidence Anchor */}
-          <Card className="p-5 space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-border">
-              <Database className="w-4 h-4 text-accent" />
-              <h3 className="text-sm font-semibold text-text">Ethereum Web3 Evidence Anchor</h3>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="space-y-1.5">
-                <label htmlFor="rpc-url-input" className="block text-text-muted font-medium">
-                  Ethereum JSON-RPC node endpoint
-                </label>
-                <input
-                  id="rpc-url-input"
-                  type="text"
-                  value={rpcEndpoint}
-                  onChange={(e) => setRpcEndpoint(e.target.value)}
-                  className="w-full h-9 px-3 rounded-lg bg-surface-raised border border-border text-xs font-mono text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label htmlFor="contract-addr-input" className="block text-text-muted font-medium">
-                  Smart contract address (EvidenceAnchor.sol)
-                </label>
-                <input
-                  id="contract-addr-input"
-                  type="text"
-                  value={contractAddress}
-                  onChange={(e) => setContractAddress(e.target.value)}
-                  className="w-full h-9 px-3 rounded-lg bg-surface-raised border border-border text-xs font-mono text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Infrastructure Node Health Matrix */}
-          <div id="nodes" className="space-y-3 pt-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-text">Infrastructure Node Health Matrix</h3>
-                <p className="text-xs text-text-muted">Real-time status of forensic telemetry microservices.</p>
-              </div>
-              <Badge variant="demo" size="sm">Demo data</Badge>
-            </div>
-
-            <div className="space-y-2">
-              {telemetryNodes.map((node, i) => (
-                <div
-                  key={i}
-                  className="p-3.5 rounded-xl border border-border bg-surface flex items-center justify-between gap-3 text-xs"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-2 h-2 rounded-full bg-accent animate-ping shrink-0" />
-                    <div className="min-w-0">
-                      <span className="font-semibold text-text block truncate">{node.name}</span>
-                      <span className="text-[11px] font-mono text-text-muted">
-                        Port {node.port} · {node.group}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <Badge variant="low" size="sm">
-                      {node.status}
-                    </Badge>
-                    <span className="text-[11px] font-mono text-text-muted block mt-0.5">{node.latency}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Save Action */}
-          <div className="flex justify-end pt-2">
-            <Button
-              variant="primary"
-              size="sm"
-              iconLeft={<Save className="w-4 h-4" />}
-              onClick={handleSaveSystemConfig}
-            >
-              Save system configuration
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================= */}
-      {/* SECTION 3: APPEARANCE & AUDIO                             */}
+      {/* SECTION 3: APPEARANCE (THEME, DENSITY, LANGUAGE)           */}
       {/* ========================================================= */}
       {activeSection === 'appearance' && (
         <div className="space-y-6">
@@ -600,7 +744,53 @@ export function SettingsPage() {
             </div>
           </Card>
 
-          {/* Language Selection */}
+          {/* Density Selection Card */}
+          <Card className="p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-border">
+              <Sliders className="w-4 h-4 text-accent" />
+              <h3 className="text-sm font-semibold text-text">Display Density</h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => changeDensity('comfortable')}
+                className={`p-4 rounded-xl border text-left transition-colors cursor-pointer space-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  density === 'comfortable'
+                    ? 'bg-accent/10 border-accent'
+                    : 'bg-surface border-border hover:bg-surface-raised/50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-text">Comfortable (Standard)</span>
+                  {density === 'comfortable' && <BadgeCheck className="w-4 h-4 text-accent" />}
+                </div>
+                <p className="text-[11px] text-text-muted leading-relaxed">
+                  Generous row spacing, spacious paddings, and standard typography. Ideal for in-depth investigative reading.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => changeDensity('compact')}
+                className={`p-4 rounded-xl border text-left transition-colors cursor-pointer space-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  density === 'compact'
+                    ? 'bg-accent/10 border-accent'
+                    : 'bg-surface border-border hover:bg-surface-raised/50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-text">Compact (High Density)</span>
+                  {density === 'compact' && <BadgeCheck className="w-4 h-4 text-accent" />}
+                </div>
+                <p className="text-[11px] text-text-muted leading-relaxed">
+                  Condensed table rows, tighter margins, and higher information density. Optimized for multi-monitor SOC triage.
+                </p>
+              </button>
+            </div>
+          </Card>
+
+          {/* Language Selection Card */}
           <Card className="p-5 space-y-4">
             <div className="flex items-center gap-2 pb-2 border-b border-border">
               <Shield className="w-4 h-4 text-accent" />
@@ -609,7 +799,7 @@ export function SettingsPage() {
 
             <div className="space-y-2 text-xs">
               <p className="text-text-muted">
-                Dossier reports and executive briefings are dynamically translated into 11 regional languages for citizen advisory notices.
+                Executive briefings, dossiers, and citizen advisory warnings are dynamically translated into 11 regional languages.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 pt-2">
                 {[
@@ -645,38 +835,81 @@ export function SettingsPage() {
               </div>
             </div>
           </Card>
+        </div>
+      )}
 
-          {/* Audio & Alert Narration */}
-          <Card className="p-5 space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-border">
-              <Volume2 className="w-4 h-4 text-accent" />
-              <h3 className="text-sm font-semibold text-text">Audio Narration & Chimes</h3>
+      {/* ========================================================= */}
+      {/* SECTION 4: DEMO SIMULATION MODE                           */}
+      {/* ========================================================= */}
+      {activeSection === 'demo' && (
+        <div className="space-y-6">
+          <Card className="p-5 space-y-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                  <h3 className="text-sm font-semibold text-text">Global Demo Mode Simulation</h3>
+                </div>
+                <p className="text-xs text-text-muted max-w-xl">
+                  Enables demonstration of Android Banking Trojan analysis workflows, simulated ATT&CK matrices, and pre-computed threat graphs without requiring live APK uploads.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 shrink-0">
+                <Badge variant={isDemoMode ? 'demo' : 'neutral'} size="sm">
+                  {isDemoMode ? 'Demo active' : 'Live mode'}
+                </Badge>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isDemoMode}
+                  onClick={toggleDemoMode}
+                  className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                    isDemoMode ? 'bg-accent justify-end' : 'bg-surface-raised border border-border justify-start'
+                  }`}
+                  aria-label="Toggle demo mode"
+                >
+                  <span className={`w-4 h-4 rounded-full transition-transform ${isDemoMode ? 'bg-black' : 'bg-text-muted'}`} />
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-4 text-xs">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-surface-raised border border-border">
-                <div>
-                  <span className="text-text font-medium block">Audible threat alerts</span>
-                  <span className="text-text-muted text-[11px]">Play audio chimes when critical APK samples are verified</span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={soundAlerts}
-                  onChange={(e) => setSoundAlerts(e.target.checked)}
-                  className="w-4 h-4 accent-accent cursor-pointer"
-                />
+            <div className="pt-4 border-t border-border grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div className="p-4 rounded-xl bg-surface-raised/40 border border-border space-y-2">
+                <span className="font-semibold text-text flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <span>When Demo Mode is Enabled</span>
+                </span>
+                <ul className="text-text-muted space-y-1.5 text-[11px] list-disc list-inside">
+                  <li>Sample banking trojan cases (Anubis, Cerberus, Spynote) are pre-loaded.</li>
+                  <li>MITRE ATT&CK coverage heatmaps render simulated tactical matrices.</li>
+                  <li>Threat correlation graph visualizes synthetic C2 campaign linkages.</li>
+                  <li>All sample panels explicitly carry the "Demo data" indicator badge.</li>
+                </ul>
               </div>
 
-              <div className="p-3 rounded-lg bg-surface-raised border border-border flex items-center justify-between gap-4">
-                <div>
-                  <span className="text-text font-medium block">Multi-speaker speech synthesizer</span>
-                  <span className="text-text-muted text-[11px]">Narrate executive summaries in active language ({language.toUpperCase()})</span>
-                </div>
-                <MultiSpeakerNarrator
-                  langCode={language}
-                  textToRead="Active campaigns detected targeting mobile banking applications via OTP interception and accessibility abuse."
-                />
+              <div className="p-4 rounded-xl bg-surface-raised/40 border border-border space-y-2">
+                <span className="font-semibold text-text flex items-center gap-1.5">
+                  <Activity className="w-4 h-4 text-accent" />
+                  <span>When Demo Mode is Disabled (Live Mode)</span>
+                </span>
+                <ul className="text-text-muted space-y-1.5 text-[11px] list-disc list-inside">
+                  <li>Sample and placeholder cases are suppressed across all dashboards.</li>
+                  <li>Intelligence matrices display clean empty states until samples are analyzed.</li>
+                  <li>New cases appear only when real APKs are submitted on the Analyze page.</li>
+                  <li>Blockchain anchoring executes real MetaMask wallet transactions.</li>
+                </ul>
               </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <Button
+                variant={isDemoMode ? 'secondary' : 'primary'}
+                size="sm"
+                onClick={() => setDemoMode(!isDemoMode)}
+              >
+                {isDemoMode ? 'Switch to live mode only' : 'Enable demo simulation'}
+              </Button>
             </div>
           </Card>
         </div>
