@@ -314,7 +314,7 @@ interface AnalysisContextType {
   // Actions
   setCaseData: React.Dispatch<React.SetStateAction<CaseDataPayload | null>>;
   loadCaseById: (id: string) => Promise<boolean>;
-  triggerAnalysis: (file: File) => Promise<CaseDataPayload>;
+  triggerAnalysis: (file: File, signal?: AbortSignal) => Promise<CaseDataPayload>;
   appendNewCase: (filePayload: File) => void;
   resetAnalysis: () => void;
   updateBlockchainAnchor: (txHash: string, blockNumber: number, timestamp: Date) => void;
@@ -378,7 +378,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
   }, [isDemoMode]);
 
 
-  const triggerAnalysis = async (file: File) => {
+  const triggerAnalysis = async (file: File, signal?: AbortSignal) => {
     setIsLoading(true);
     setError(null);
 
@@ -393,6 +393,13 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       computedSha256 = "bfb624ea" + Math.floor(10000000 + Math.random() * 90000000) + "38cd4857b61f891b9201974de31";
     }
 
+    if (signal?.aborted) {
+      setIsLoading(false);
+      const abortErr = new Error("Analysis cancelled");
+      abortErr.name = "AbortError";
+      throw abortErr;
+    }
+
     let payload: any = null;
     let serverCaseId = "case-" + Math.floor(1000 + Math.random() * 9000);
 
@@ -404,6 +411,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       const res = await fetch(`${API_BASE_URL}/api/v1/uploads`, {
         method: "POST",
         body: formData,
+        signal,
       });
 
       if (!res.ok) {
@@ -429,6 +437,12 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
         if (data.case_id) serverCaseId = data.case_id;
       }
     } catch (err: any) {
+      if (err?.name === "AbortError" || signal?.aborted) {
+        setIsLoading(false);
+        const abortErr = new Error("Analysis cancelled");
+        abortErr.name = "AbortError";
+        throw abortErr;
+      }
       if (!isDemoMode) {
         setIsLoading(false);
         const msg = err?.message || "Network error connecting to backend API";
@@ -436,6 +450,13 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
         throw err;
       }
       console.warn("Backend API upload call unreachable or failed, switching to client-side extraction fallback in demo mode:", err);
+    }
+
+    if (signal?.aborted) {
+      setIsLoading(false);
+      const abortErr = new Error("Analysis cancelled");
+      abortErr.name = "AbortError";
+      throw abortErr;
     }
 
     if (!isDemoMode && !payload) {
