@@ -92,7 +92,7 @@ export const Tabs: React.FC<TabsProps> = ({
             onClick={() => !tab.disabled && onChange(tab.id)}
             onKeyDown={(e) => handleKeyDown(e, idx)}
             className={`
-              relative inline-flex items-center gap-2 font-medium transition-colors duration-fast select-none cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1
+              relative inline-flex items-center gap-2 font-medium transition-colors duration-fast select-none cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 whitespace-nowrap
               ${sizeClass}
               ${tab.disabled ? 'opacity-40 cursor-not-allowed' : ''}
               ${

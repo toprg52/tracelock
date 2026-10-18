@@ -14,3 +14,4 @@ export * from './Modal';
 export * from './Tooltip';
 export * from './Breadcrumbs';
 export * from './DemoBadge';
+export * from './Accordion';
