@@ -31,7 +31,7 @@ export const ThemeToggleSwitch: React.FC = () => {
     <button
       type="button"
       onClick={toggleTheme}
-      className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       title={isLight ? "Switch to dark theme" : "Switch to light theme"}
       aria-label={isLight ? "Switch to dark theme" : "Switch to light theme"}
     >

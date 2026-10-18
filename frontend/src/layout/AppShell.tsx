@@ -8,6 +8,7 @@ import { Drawer } from '../components/ui/Drawer';
 import { Badge } from '../components/ui/Badge';
 import { CommandPalette } from '../components/CommandPalette';
 import { useDemoMode } from '../context/DemoModeContext';
+import { Logo } from '../components/brand/Logo';
 
 export interface AppShellProps {
   headerNotify?: string | null;
@@ -49,14 +50,9 @@ export function AppShell({
             <Link
               to="/"
               onClick={() => setIsMobileNavOpen(false)}
-              className="flex items-center gap-3 cursor-pointer group"
+              className="flex items-center gap-2.5 cursor-pointer group py-1"
             >
-              <div className="w-8 h-8 rounded-md bg-surface-raised border border-border flex items-center justify-center text-accent group-hover:border-accent transition-colors">
-                <Shield className="w-5 h-5" />
-              </div>
-              <h1 className="font-bold tracking-wider text-xs text-text font-sans">
-                TRACELOCK
-              </h1>
+              <Logo markType="A" variant="horizontal" size={24} className="text-text group-hover:text-accent transition-colors" />
             </Link>
             <button
               type="button"
@@ -109,14 +105,7 @@ export function AppShell({
           to="/"
           className="p-4 border-b border-border flex items-center gap-3 shrink-0 hover:bg-surface-raised/40 transition-colors group"
         >
-          <div className="w-8 h-8 rounded-md bg-surface-raised border border-border flex items-center justify-center text-accent group-hover:border-accent transition-colors">
-            <Shield className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="font-bold tracking-wider text-xs text-text font-sans">
-              TRACELOCK
-            </h1>
-          </div>
+          <Logo markType="A" variant="horizontal" size={24} className="text-text group-hover:text-accent transition-colors" />
         </Link>
         <SidebarNav />
       </aside>

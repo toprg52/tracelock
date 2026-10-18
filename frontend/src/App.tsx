@@ -28,17 +28,17 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
-  const [isDesignPreview, setIsDesignPreview] = useState(() => window.location.hash === '#design-preview');
+  const [currentHash, setCurrentHash] = useState(() => window.location.hash);
 
   useEffect(() => {
     const handleHashChange = () => {
-      setIsDesignPreview(window.location.hash === '#design-preview');
+      setCurrentHash(window.location.hash);
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  if (isDesignPreview) {
+  if (currentHash === '#design-preview') {
     return (
       <ErrorBoundary>
         <DesignPreview onExit={() => { window.location.hash = ''; }} />

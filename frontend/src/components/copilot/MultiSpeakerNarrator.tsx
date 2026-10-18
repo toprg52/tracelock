@@ -113,7 +113,7 @@ export const MultiSpeakerNarrator: React.FC<MultiSpeakerNarratorProps> = ({
     <button
       type="button"
       onClick={toggleNarrator}
-      className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+      className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
         isPlaying
           ? "bg-accent/15 text-accent animate-pulse"
           : "text-text-muted hover:text-text hover:bg-surface-raised"

@@ -9,6 +9,7 @@ import { ThemeToggleSwitch } from '../components/ThemeToggleSwitch';
 import { Badge } from '../components/ui/Badge';
 import { Tooltip } from '../components/ui/Tooltip';
 import { Breadcrumbs, BreadcrumbItem } from '../components/ui/Breadcrumbs';
+import { Logo } from '../components/brand/Logo';
 
 export interface HeaderProps {
   headerNotify?: string | null;
@@ -110,12 +111,16 @@ export function Header({
           <button
             type="button"
             onClick={onOpenMobileNav}
-            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer shrink-0"
+            className="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer shrink-0"
             aria-label="Open navigation menu"
           >
             <Menu className="w-5 h-5" />
           </button>
         </Tooltip>
+
+        <Link to="/" className="md:hidden flex items-center shrink-0 pr-1 hover:opacity-85 transition-opacity" aria-label="Tracelock Home">
+          <Logo markType="A" variant="mark" size={20} className="text-text" />
+        </Link>
 
         <Badge variant={isDemoMode ? 'demo' : 'neutral'} size="sm" dot className="shrink-0">
           <span className="hidden min-[380px]:inline">{isDemoMode ? 'Demo environment' : 'Local environment'}</span>
@@ -144,7 +149,7 @@ export function Header({
           <button
             type="button"
             onClick={onOpenCommandPalette}
-            className="h-8 px-2 sm:px-2.5 rounded-md bg-surface-raised hover:bg-surface-raised/80 border border-border text-xs font-sans text-text-muted hover:text-text flex items-center gap-1.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="h-8 px-2 sm:px-2.5 rounded-md bg-surface-raised hover:bg-surface-raised/80 border border-border text-xs font-sans text-text-muted hover:text-text flex items-center gap-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Open command palette"
           >
             <Search className="w-3.5 h-3.5 text-text-muted" />
@@ -157,7 +162,7 @@ export function Header({
           <button
             type="button"
             onClick={toggleDemoMode}
-            className={`h-8 px-2 sm:px-2.5 rounded-md border text-xs font-sans font-medium flex items-center gap-1.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+            className={`h-8 px-2 sm:px-2.5 rounded-md border text-xs font-sans font-medium flex items-center gap-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               isDemoMode
                 ? 'bg-amber-500/15 border-amber-500/30 text-amber-400 hover:bg-amber-500/25'
                 : 'bg-surface-raised border-border text-text-muted hover:text-text'
@@ -174,7 +179,7 @@ export function Header({
           <button
             type="button"
             onClick={onOpenAnalystConsole}
-            className="h-8 px-2 sm:px-2.5 rounded-md bg-surface-raised hover:bg-surface-raised/80 border border-border text-xs font-sans font-medium text-text flex items-center gap-1.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="h-8 px-2 sm:px-2.5 rounded-md bg-surface-raised hover:bg-surface-raised/80 border border-border text-xs font-sans font-medium text-text flex items-center gap-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Analyst console"
           >
             <Terminal className="w-4 h-4 text-accent shrink-0" />
@@ -187,7 +192,7 @@ export function Header({
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="h-8 px-1.5 sm:px-2 text-xs font-sans font-medium bg-surface-raised border border-border rounded-md text-text hover:border-border-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer transition-colors max-w-[58px] sm:max-w-none"
+            className="h-8 px-1.5 sm:px-2 text-xs font-sans font-medium bg-surface-raised border border-border rounded-md text-text hover:border-border-subtle focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer transition-colors max-w-[58px] sm:max-w-none"
             aria-label="Select console language"
           >
             <option value="en">EN</option>
@@ -221,7 +226,7 @@ export function Header({
         <Tooltip content="Infrastructure telemetry" position="bottom">
           <Link
             to="/settings?section=system"
-            className="hidden sm:flex w-8 h-8 rounded-md items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="hidden sm:flex w-8 h-8 rounded-md items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Infrastructure telemetry"
           >
             <Server className="w-4 h-4" />
@@ -232,7 +237,7 @@ export function Header({
         <Tooltip content="Identity & access" position="bottom">
           <Link
             to="/settings?section=account"
-            className="hidden sm:flex w-8 h-8 rounded-md items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="hidden sm:flex w-8 h-8 rounded-md items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Identity and role access"
           >
             <Users className="w-4 h-4" />
@@ -243,7 +248,7 @@ export function Header({
         <Tooltip content="System settings" position="bottom">
           <Link
             to="/settings?section=appearance"
-            className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="w-8 h-8 rounded-md flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-raised transition-colors cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="System configuration"
           >
             <Settings className="w-4 h-4" />
