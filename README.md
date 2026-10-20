@@ -8,6 +8,14 @@ Tracelock automates end-to-end forensic investigation of suspicious Android appl
   <img src="docs/assets/Tracelockgif.gif" alt="Tracelock Platform Demo" width="100%" />
 </p>
 
+<p align="center">
+  <a href="https://youtu.be/E7ds0-OO-jQ" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/YouTube-Watch%20Full%20Walkthrough-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Watch Full Walkthrough on YouTube" />
+  </a>
+  <br/>
+  <sub>📺 <em>Watch the complete forensic analysis & platform walkthrough on <a href="https://youtu.be/E7ds0-OO-jQ">YouTube</a></em></sub>
+</p>
+
 ---
 
 ## Key Capabilities
