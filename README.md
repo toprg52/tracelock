@@ -4,6 +4,10 @@
 
 Tracelock automates end-to-end forensic investigation of suspicious Android application packages (APKs) distributed via SMS, messaging apps, and phishing vectors. Designed specifically to counter banking trojans, SMS/OTP interceptors, and credential-harvesting threats targeting financial institutions and customers, Tracelock accelerates the pipeline from sample upload to verifiable, evidence-backed forensic intelligence.
 
+<p align="center">
+  <img src="docs/assets/Tracelockgif.gif" alt="Tracelock Platform Demo" width="100%" />
+</p>
+
 ---
 
 ## Key Capabilities
